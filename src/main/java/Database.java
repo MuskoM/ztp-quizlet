@@ -1,18 +1,22 @@
-import com.mongodb.ConnectionString;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import io.github.cdimascio.dotenv.Dotenv;
 
 public class Database {
 
     private static Database instance;
     private MongoDatabase database;
 
-    private final String uriString = "mongodb+srv://nvi0:Deskjet5150@cluster0.fgs4p.mongodb.net/ztp-quizlet?retryWrites=true&w=majority";
-
 
     private Database(){
+        Dotenv env_vars = Dotenv.load();
+        String uriString = "mongodb+srv://" +
+                            env_vars.get("DATABASE_LOGIN") +":" +
+                            env_vars.get("DATABASE_PASSWORD") + "@cluster0.fgs4p.mongodb.net/" +
+                            env_vars.get("DATABASE_NAME")+"?retryWrites=true&w=majority";
         MongoClient client = MongoClients.create(uriString);
         this.database = client.getDatabase("ztp-quizlet");
     }
@@ -42,7 +46,8 @@ public class Database {
     collection.insertOne(testDoc);
 
    //Pobierz z kolekcji
-
+    FindIterable<Document> iterable = collection.find(new Document());
+    iterable.forEach(document -> System.out.println(document.toJson()));
 
    //Usuń z kolekcji
 

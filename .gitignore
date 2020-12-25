@@ -1,6 +1,6 @@
 # Default ignored files
 .idea
-
+src/main/resources/.env
 # Created by https://www.toptal.com/developers/gitignore/api/gradle
 # Edit at https://www.toptal.com/developers/gitignore?templates=gradle
 
