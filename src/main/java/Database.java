@@ -40,14 +40,29 @@ public class Database {
     MongoCollection<Document> collection = database.getCollection("pol-eng");
 
    //Dodaj do kolekcji
-    Document testDoc = new Document("pies","dog").append("kot","cat");
+    Document testDoc = new Document("languageWord","dog").append("translatedWord","pies");
     Document insideDoc = new Document("typ","zwierzęta");
     testDoc.put("meta-data",insideDoc);
     collection.insertOne(testDoc);
 
+    collection.insertMany(asList(Document.parse("{languageWord: 'pen', translatedWord: 'długopis'}"),
+                Document.parse("{languageWord: 'cat', translatedWord: 'kot'}"),
+                Document.parse("{languageWord: 'bucket', translatedWord: 'wiadro'}"),
+                Document.parse("{languageWord: 'apple', translatedWord: 'jabłko'}"),
+                Document.parse("{languageWord: 'case', translatedWord: 'przypadek'}"),
+                Document.parse("{languageWord: 'computer', translatedWord: 'komputer'}")));
+
    //Pobierz z kolekcji
     FindIterable<Document> iterable = collection.find(new Document());
+
     iterable.forEach(document -> System.out.println(document.toJson()));
+
+    iterable = collection.find(eq("languageWord","pen"));
+        iterable.forEach(document -> {
+            System.out.println(document);
+        });
+
+
 
    //Usuń z kolekcji
 
