@@ -1,9 +1,16 @@
-
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.github.cdimascio.dotenv.Dotenv;
+
+/***
+ * Database template:
+ * _id:ObjectId("5fe....."
+ * languageWord: "apple"
+ * translatedWord: "jabłko"
+ */
+
 
 public class Database {
 
@@ -61,8 +68,6 @@ public class Database {
         iterable.forEach(document -> {
             System.out.println(document);
         });
-
-
 
    //Usuń z kolekcji
 
