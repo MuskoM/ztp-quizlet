@@ -2,11 +2,11 @@ package Flashcards;
 
 public class Flashcard {
 
-    private String languageWord;
-    private String translatedWord;
-    private String answer;
-    private boolean isAnswered;
-    private boolean isAnswerCorrect;
+    protected String languageWord;
+    protected String translatedWord;
+    protected String answer;
+    protected boolean isAnswered;
+    protected boolean isAnswerCorrect;
     //TODO: Zmienić typ Object na FlashcardType, po zrobieniu Flyweighta
     Object type;
 
