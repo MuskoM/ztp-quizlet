@@ -1,15 +1,15 @@
 package Summarization;
 
 public class Summarization {
-    private Strategy summaryStrategy;
+    private SummaryStrategy summaryStrategy;
 
-    public void setSummaryStrategy(Strategy newStrategy)
+    public void setSummaryStrategy(SummaryStrategy newSummaryStrategy)
     {
-        this.summaryStrategy = newStrategy;
+        this.summaryStrategy = newSummaryStrategy;
     }
 
-    public void finalizeSummary()
+    public float finalizeSummary(String correctAnswer, String userAnswer)
     {
-        summaryStrategy.summarize();
+        return summaryStrategy.summarize(correctAnswer, userAnswer);
     }
 }

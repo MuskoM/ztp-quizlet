@@ -1,5 +1,7 @@
 package Flashcards;
 
+import Summarization.Summarization;
+
 public class Flashcard {
 
     protected String languageWord;
@@ -9,17 +11,26 @@ public class Flashcard {
     protected boolean isAnswerCorrect;
     //TODO: Zmienić typ Object na FlashcardType, po zrobieniu Flyweighta
     Object type;
+    protected Summarization summContext;
 
     public Flashcard() {
+        summContext = new Summarization();
     }
 
-    public Flashcard(String languageWord, String translatedWord ){
+    public Flashcard(String languageWord, String translatedWord) {
         this.translatedWord = translatedWord;
         this.languageWord = languageWord;
+
+        summContext = new Summarization();
     }
 
-    public void viewFlashcard(String canvas){
+    public void viewFlashcard(String canvas) {
         System.out.println("Language Word: " + languageWord + " Translated Word: " + translatedWord);
+    }
+
+    public void summarizeAnswer()
+    {
+        summContext.finalizeSummary(languageWord, answer);
     }
 
     public String getBaseWord() {

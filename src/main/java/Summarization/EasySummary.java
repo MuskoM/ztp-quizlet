@@ -1,10 +1,14 @@
 package Summarization;
 
-public class EasySummary implements Strategy {
+public class EasySummary implements SummaryStrategy {
     private String[] answers;
 
     @Override
-    public void summarize() {
-
+    public float summarize(String correctAnswer, String userAnswer) {
+        if (correctAnswer.equals(userAnswer))
+        {
+            return 1;
+        }
+        else return 0;
     }
 }
