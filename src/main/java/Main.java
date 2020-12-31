@@ -1,3 +1,4 @@
+import FlashcardCollection.FlashcardCollection;
 import Flashcards.*;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -12,6 +13,7 @@ public class Main {
     public static void main(String[] args) {
 
         Database database = Database.getInstance();
+        FlashcardCollection fc = new FlashcardCollection(database);
         MongoCollection<Document> collection = database.getCollection("pol-eng");
         FindIterable<Document> iterable;
         List<Flashcard> words = new ArrayList<>();
