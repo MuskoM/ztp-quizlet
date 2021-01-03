@@ -53,7 +53,8 @@ public class Flashcard {
         return answer;
     }
 
-    public void setAnswer(String answer) {
+    public void setAnswer(String answer)
+    {
         this.answer = answer;
     }
 

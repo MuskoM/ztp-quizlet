@@ -1,10 +1,7 @@
-package FlashcardCollection;
-
 import Flashcards.Flashcard;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
-import Database;
 
 import java.util.ArrayList;
 import java.util.List;

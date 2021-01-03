@@ -1,8 +1,4 @@
-package FlashcardCollection;
-
 import Flashcards.Flashcard;
-
-import javax.lang.model.type.NullType;
 
 public class LearningIterator implements FlashcardIterator {
     private FlashcardCollection collection;

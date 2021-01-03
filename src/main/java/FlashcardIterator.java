@@ -1,5 +1,3 @@
-package FlashcardCollection;
-
 import Flashcards.Flashcard;
 
 public interface FlashcardIterator {

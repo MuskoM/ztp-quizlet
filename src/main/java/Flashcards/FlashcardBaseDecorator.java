@@ -2,13 +2,14 @@ package Flashcards;
 
 public class FlashcardBaseDecorator extends Flashcard {
 
-    private Flashcard wrapee;
+    protected Flashcard wrapee;
 
     public FlashcardBaseDecorator(Flashcard wrapee){
         this.wrapee = wrapee;
         this.languageWord = wrapee.languageWord;
         this.translatedWord = wrapee.translatedWord;
     }
+
 
     @Override
     public void viewFlashcard(String canvas) {
