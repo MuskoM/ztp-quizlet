@@ -20,6 +20,7 @@ public class FlashcardCollection {
         iterable = collection.find(new Document());
         iterable.forEach(document -> words.add(new Flashcard(document.get("languageWord").toString(),
                 document.get("translatedWord").toString())));
+        flashcards = words;
     }
 
     public List<Flashcard> getFlashcards()
