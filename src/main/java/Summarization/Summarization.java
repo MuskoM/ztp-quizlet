@@ -1,7 +1,7 @@
 package Summarization;
 
 public class Summarization {
-    private SummaryStrategy summaryStrategy;
+    private SummaryStrategy summaryStrategy = new EasySummary();
 
     public void setSummaryStrategy(SummaryStrategy newSummaryStrategy)
     {

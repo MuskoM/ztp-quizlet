@@ -1,8 +1,13 @@
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import Flashcards.Flashcard;
+import com.mongodb.DBObject;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Aggregates;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.bson.Document;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /***
  * Database template:
@@ -39,6 +44,17 @@ public class Database {
         return this.database.getCollection(collectionName);
     }
 
+    public List getOptionWords(String field_name){
+
+        List <String> documents = new ArrayList<>();
+        MongoCollection<Document> collection = database.getCollection("pol-eng");
+        FindIterable<Document> iterable;
+        iterable = collection.find(new Document());
+        iterable.forEach(document -> {
+            documents.add(document.get(field_name).toString());
+        });
+        return  documents;
+    }
 }
 
  /*

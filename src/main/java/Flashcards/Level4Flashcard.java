@@ -1,5 +1,7 @@
 package Flashcards;
 
+import Summarization.DifficultSummary;
+
 import java.util.Scanner;
 
 public class Level4Flashcard extends FlashcardBaseDecorator{
@@ -8,6 +10,7 @@ public class Level4Flashcard extends FlashcardBaseDecorator{
 
     public Level4Flashcard(Flashcard wrapee) {
         super(wrapee);
+        wrapee.summContext.setSummaryStrategy(new DifficultSummary());
     }
 
     @Override

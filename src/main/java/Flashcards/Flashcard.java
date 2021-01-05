@@ -12,6 +12,7 @@ public class Flashcard {
     //TODO: Zmienić typ Object na FlashcardType, po zrobieniu Flyweighta
     Object type;
     protected Summarization summContext;
+    protected String options[];
 
     public Flashcard() {
         summContext = new Summarization();
@@ -28,9 +29,9 @@ public class Flashcard {
         System.out.println("Language Word: " + languageWord + " Translated Word: " + translatedWord);
     }
 
-    public void summarizeAnswer()
+    public float summarizeAnswer()
     {
-        summContext.finalizeSummary(languageWord, answer);
+        return summContext.finalizeSummary(languageWord, answer);
     }
 
     public String getBaseWord() {
@@ -80,5 +81,9 @@ public class Flashcard {
 
     public void setType(Object type) {
         this.type = type;
+    }
+
+    public void setOptions(String[] options) {
+        this.options = options;
     }
 }

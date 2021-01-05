@@ -3,6 +3,7 @@ package Flashcards;
 public class FlashcardBaseDecorator extends Flashcard {
 
     protected Flashcard wrapee;
+    protected String[] options;
 
     public FlashcardBaseDecorator(Flashcard wrapee){
         this.wrapee = wrapee;
@@ -14,5 +15,9 @@ public class FlashcardBaseDecorator extends Flashcard {
     @Override
     public void viewFlashcard(String canvas) {
         super.viewFlashcard(canvas);
+    }
+
+    public void setOptions(String[] options) {
+        this.options = options;
     }
 }
