@@ -2,11 +2,13 @@ package Flashcards;
 
 import Summarization.DifficultSummary;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Level4Flashcard extends FlashcardBaseDecorator{
 
-    public String input = "PLACEHOLDER";
+    private  String[] answers = new String[3];
+    private ArrayList<Integer> randomized_option = new ArrayList<>();
 
     public Level4Flashcard(Flashcard wrapee) {
         super(wrapee);

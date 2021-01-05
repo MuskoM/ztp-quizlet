@@ -18,11 +18,11 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
     @Override
     public void viewFlashcard(String canvas) {
         Random rand = new Random();
-        randomized_option = rand.nextInt(options.length);
+        randomized_option = rand.nextInt(options.size());
         System.out.println("Level 1");
         super.viewFlashcard(canvas);
         if(rand.nextInt()%2 == 0){
-            answers[0] = options[randomized_option%options.length];
+            answers[0] = options.get(randomized_option%options.size());
             System.out.println("A. " + answers[0]);
 
             answers[1] = languageWord;
@@ -32,7 +32,7 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
             answers[0] = languageWord;
             System.out.println("A. " + languageWord);
 
-            answers[1] = options[randomized_option%options.length];
+            answers[1] = options.get(randomized_option%options.size());
             System.out.println("B. " + answers[1]);
         }
     }

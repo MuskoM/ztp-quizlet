@@ -2,6 +2,8 @@ package Flashcards;
 
 import Summarization.Summarization;
 
+import java.util.List;
+
 public class Flashcard {
 
     protected String languageWord;
@@ -12,7 +14,7 @@ public class Flashcard {
     //TODO: Zmienić typ Object na FlashcardType, po zrobieniu Flyweighta
     Object type;
     protected Summarization summContext;
-    protected String options[];
+    protected List<String> options;
 
     public Flashcard() {
         summContext = new Summarization();
@@ -22,6 +24,13 @@ public class Flashcard {
         this.translatedWord = translatedWord;
         this.languageWord = languageWord;
 
+        summContext = new Summarization();
+    }
+
+    public Flashcard(String languageWord, String translatedWord, List<String> options) {
+        this.translatedWord = translatedWord;
+        this.languageWord = languageWord;
+        this.options = options;
         summContext = new Summarization();
     }
 
@@ -71,19 +80,16 @@ public class Flashcard {
         return isAnswerCorrect;
     }
 
-    public void setAnswerCorrect(boolean answerCorrect) {
-        isAnswerCorrect = answerCorrect;
-    }
 
-    public Object getType() {
-        return type;
-    }
-
-    public void setType(Object type) {
-        this.type = type;
-    }
-
-    public void setOptions(String[] options) {
+    public void setOptions(List<String> options) {
         this.options = options;
+    }
+
+    @Override
+    public String toString() {
+        return "Flashcard{" +
+                "languageWord='" + languageWord + '\'' +
+                ", translatedWord='" + translatedWord + '\'' +
+                '}';
     }
 }
