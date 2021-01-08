@@ -16,11 +16,10 @@ public class FlashcardCollection {
     {
         MongoCollection<Document> collection = database.getCollection("pol-eng");
         FindIterable<Document> iterable;
-        List<Flashcard> words = new ArrayList<>();
+        flashcards = new ArrayList<>();
         iterable = collection.find(new Document());
-        iterable.forEach(document -> words.add(new Flashcard(document.get("languageWord").toString(),
+        iterable.forEach(document -> flashcards.add(new Flashcard(document.get("languageWord").toString(),
                 document.get("translatedWord").toString())));
-        flashcards = words;
     }
 
     public List<Flashcard> getFlashcards()
@@ -32,6 +31,8 @@ public class FlashcardCollection {
     {
         return flashcards.size();
     }
+
+    public FlashcardIterator getIterator() { return iterator; }
 
     public FlashcardIterator createIterator(FlashcardIterator newIterator)
     {

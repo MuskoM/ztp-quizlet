@@ -16,7 +16,7 @@ public class Main {
 
         //TODO: Adasiek, jak to ma działać?
         System.out.println(fc.getFlashcardAmount());
-        FlashcardIterator testIterator = new TestIterator();
+        FlashcardIterator testIterator = new TestIterator(fc);
         fc.createIterator(testIterator);
 
 
@@ -31,23 +31,44 @@ public class Main {
 //            words.add(new Flashcard(document.get("languageWord").toString(),
 //                    document.get("translatedWord").toString(),options));
 //        });
-//
-//        Scanner user_input = new Scanner(System.in);
-//        int user_choice;
-//        String user_answer;
-//
-//        while (true) {
-//            System.out.println("1.Get flashcards");
-//            System.out.println("Hello input your function: ");
-//            user_choice = user_input.nextInt();
-//
-//            switch (user_choice) {
-//                case 1:
-//                    //TODO: Pytania są losowane, ale czasami dublują się opcje do wybrania,
-//                    for (int i = 0; i < words.size(); i++) {
+
+        Scanner user_input = new Scanner(System.in);
+        int user_choice;
+        String user_answer;
+
+        while (true) {
+            System.out.println("1.Get flashcards");
+            System.out.println("Hello input your function: ");
+            user_choice = user_input.nextInt();
+            int i = 0;
+
+            switch (user_choice) {
+                case 1:
+                    //TODO: Pytania są losowane, ale czasami dublują się opcje do wybrania,
+                    while (fc.getIterator().hasNext(true)){
+                        if (i++ % 4 == 0)
+                        {
+                            Flashcard lvl_3 = new Level3Flashcard(fc.getIterator().getNext(true));
+                            lvl_3.viewFlashcard("");
+                            System.out.println("Select the answer");
+                            user_answer = user_input.next();
+                            lvl_3.setAnswer(user_answer);
+                            System.out.println(lvl_3.getAnswer() + " " + lvl_3.summarizeAnswer());
+                        }
+                        else if(i % 4 == 1)
+                        {
+                            Flashcard lvl_1 = new Level1Flashcard(fc.getIterator().getNext(true));
+                            lvl_1.viewFlashcard("");
+                            System.out.println("Select the answer:");
+                            user_answer = user_input.next();
+                            lvl_1.setAnswer(user_answer);
+                            System.out.println(lvl_1.getAnswer() + " " + lvl_1.summarizeAnswer());
+                        }
+                    }
+//                    for (int i = 0; i < fc.getFlashcardAmount(); i++) {
 //                        //Logika odpowiadania na pytanie z fiszki
 //                        if(i%4 == 0) {
-//                            Flashcard lvl_1 = new Level3Flashcard(words.get(i));
+//                            Flashcard lvl_1 = new Level3Flashcard(fc.getFlashcards().get(i));
 //                            lvl_1.viewFlashcard("");
 //                            System.out.println("Select the answer");
 //                            user_answer = user_input.next();
@@ -64,9 +85,9 @@ public class Main {
 //                        }
 //
 //                    }
-//            }
-//
-//        }
+            }
+
+        }
 
     }
 }

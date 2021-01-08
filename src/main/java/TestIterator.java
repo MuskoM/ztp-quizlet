@@ -3,7 +3,12 @@ import Flashcards.Flashcard;
 public class TestIterator implements FlashcardIterator{
     FlashcardCollection collection;
     private Flashcard iterationState;
-    private int indx = 0;
+    private int indx = -1;
+
+    public TestIterator(FlashcardCollection collection)
+    {
+        this.collection = collection;
+    }
 
     //sprawdza czy istnieje kolejny element w kolekcji
     @Override
