@@ -17,9 +17,10 @@ public class FlashcardCollection {
         MongoCollection<Document> collection = database.getCollection("pol-eng");
         FindIterable<Document> iterable;
         flashcards = new ArrayList<>();
+        List<String> options = database.getOptionWords("languageWord");
         iterable = collection.find(new Document());
         iterable.forEach(document -> flashcards.add(new Flashcard(document.get("languageWord").toString(),
-                document.get("translatedWord").toString())));
+                document.get("translatedWord").toString(), options)));
     }
 
     public List<Flashcard> getFlashcards()
