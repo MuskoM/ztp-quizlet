@@ -30,6 +30,7 @@ public class Database {
                             env_vars.get("DATABASE_PASSWORD") + "@cluster0.fgs4p.mongodb.net/" +
                             env_vars.get("DATABASE_NAME")+"?retryWrites=true&w=majority";
         MongoClient client = MongoClients.create(uriString);
+        System.out.println(uriString);
         this.database = client.getDatabase("ztp-quizlet");
     }
 
