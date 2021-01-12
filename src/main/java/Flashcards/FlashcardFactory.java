@@ -1,18 +1,16 @@
+package Flashcards;
+
+import Flashcards.FlashcardType;
+
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FlashcardFactory {
 
-    private Map<String,FlashcardType> flashcardTypes;
+    private static Map<String, FlashcardType> flashcardTypes = new HashMap<>();
 
-    public FlashcardFactory(){
-
-        flashcardTypes = new HashMap<>();
-
-    }
-
-    public FlashcardType createFlashcardType(String name,int lvl, Color color, int x, int y){
+    public static FlashcardType createFlashcardType(String name,int lvl, Color color, int x, int y){
 
         if(flashcardTypes.containsKey(name)){
             return flashcardTypes.get(name);
@@ -25,7 +23,7 @@ public class FlashcardFactory {
         }
     }
 
-    public Map<String, FlashcardType> getFlashcardTypes() {
+    public static Map<String, FlashcardType> getFlashcardTypes() {
         return flashcardTypes;
     }
 

@@ -1,3 +1,5 @@
+package Flashcards;
+
 import java.awt.*;
 
 public class FlashcardType {
@@ -42,5 +44,16 @@ public class FlashcardType {
 
     public String getInputType() {
         return inputType;
+    }
+
+    @Override
+    public String toString() {
+        return "FlashcardType{" +
+                "color=" + color +
+                ", x=" + x +
+                ", y=" + y +
+                ", lvl=" + lvl +
+                ", inputType='" + inputType + '\'' +
+                '}';
     }
 }

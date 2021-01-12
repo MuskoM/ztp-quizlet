@@ -11,8 +11,8 @@ public class Flashcard {
     protected String answer;
     protected boolean isAnswered;
     protected boolean isAnswerCorrect;
-    //TODO: Zmienić typ Object na FlashcardType, po zrobieniu Flyweighta
-    Object type;
+    //TODO: Zmienić typ Object na Flashcards.FlashcardType, po zrobieniu Flyweighta
+    FlashcardType type;
     protected Summarization summContext;
     protected List<String> options;
 
@@ -80,6 +80,9 @@ public class Flashcard {
         return isAnswerCorrect;
     }
 
+    public FlashcardType getType() {
+        return type;
+    }
 
     public void setOptions(List<String> options) {
         this.options = options;

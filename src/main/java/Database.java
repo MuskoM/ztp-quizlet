@@ -45,6 +45,10 @@ public class Database {
         return this.database.getCollection(collectionName);
     }
 
+    public void addCollection(String collectionName){
+        database.createCollection(collectionName);
+    }
+
     public List getOptionWords(String field_name){
 
         List <String> documents = new ArrayList<>();

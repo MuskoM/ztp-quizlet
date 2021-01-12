@@ -1,5 +1,5 @@
-import Summarization.DifficultSummary;
-import Summarization.SummaryStrategy;
+import Flashcards.FlashcardFactory;
+import Flashcards.FlashcardType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

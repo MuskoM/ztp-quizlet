@@ -1,5 +1,6 @@
 package Flashcards;
 
+import java.awt.*;
 import java.util.*;
 
 public class Level2Flashcard extends FlashcardBaseDecorator{
@@ -7,8 +8,8 @@ public class Level2Flashcard extends FlashcardBaseDecorator{
     private  String[] answers = new String[3];
     private ArrayList<Integer> randomized_option = new ArrayList<>();
     public Level2Flashcard(Flashcard wrapee) {
-
         super(wrapee);
+        type = FlashcardFactory.createFlashcardType("type2",2, Color.CYAN,10,10);
         for (int i = 0; i < this.options.size(); i++){
             randomized_option.add(i);
         }

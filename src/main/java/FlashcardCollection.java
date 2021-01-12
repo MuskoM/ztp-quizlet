@@ -7,14 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlashcardCollection {
+
+    public static final String FIRST_LANGUAGE = "languageWord";
+    public static final String SECOND_LANGUAGE = "translatedWord";
+
     private List<Flashcard> flashcards;
     private FlashcardIterator iterator;
     private float[] points;
     private float pointsSum;
 
-    public FlashcardCollection(Database database)
+
+    public FlashcardCollection(Database database, String collectionName)
     {
-        MongoCollection<Document> collection = database.getCollection("pol-eng");
+
+        MongoCollection<Document> collection = database.getCollection(collectionName);
         FindIterable<Document> iterable;
         flashcards = new ArrayList<>();
         List<String> options = database.getOptionWords("languageWord");
