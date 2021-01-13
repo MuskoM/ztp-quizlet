@@ -13,12 +13,11 @@ public class GUI {
     static class TabbedPane extends JPanel {
 
         private Database database;
-        private FlashcardFactory flashcardFactory = new FlashcardFactory();
         private FlashcardCollection  flashcardCollection;
 
         public TabbedPane(Database database) {
             super(new GridLayout(1, 1));
-
+            //TODO: Zrobić ekran startowy dla testów i learningu
             this.database = database;
             flashcardCollection = new FlashcardCollection(database,"pol-eng");
 
@@ -50,40 +49,55 @@ public class GUI {
         }
 
         protected JPanel makeTestSessionPanel(String text) {
+
+            //TODO: Losowanie fiszek dla danej sesji z podanego zakresu i wybór trudności
+
             FlashcardIterator testIterator = new TestIterator(flashcardCollection);
             flashcardCollection.createIterator(testIterator);
 
             //Main panel
             JPanel panel = new JPanel();
-
-            //TODO: Add progressbar
-
             Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
-            //TODO: Pobawić się LayoutMngrmi i wycentrować fiszkę na ekranie
-//            panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
+
             panel.setLayout(new GridBagLayout());
+
+            GridBagConstraints flashcardconstraint = new GridBagConstraints();
+            GridBagConstraints progressBarConstraint = new GridBagConstraints();
+            flashcardconstraint.weighty = 0.5;
+            flashcardconstraint.weightx = 0.5;
+            progressBarConstraint.weightx = 0.5;
+            progressBarConstraint.weighty = 0.5;
             //Info about the flashcard Panel
             //Answers Panel
             JPanel flashcardPanel = flashcard.getFlashcardPanel();
+            flashcardconstraint.anchor = GridBagConstraints.CENTER;
+            flashcardconstraint.gridy = 2;
+            flashcardconstraint.gridx = 0;
+            panel.add(flashcardPanel, flashcardconstraint);
 
-            panel.add(flashcardPanel);
             JProgressBar progressBar = new JProgressBar();
             progressBar.setMinimum(0);
             progressBar.setMaximum(flashcardCollection.getFlashcardAmount());
             progressBar.setValue(0);
-
+            progressBarConstraint.fill = GridBagConstraints.HORIZONTAL;
+            progressBarConstraint.anchor = GridBagConstraints.PAGE_END;
+            progressBarConstraint.gridy = 2;
+            progressBarConstraint.gridx = 0;
+            progressBarConstraint.gridwidth = 3;
+            panel.add(progressBar, progressBarConstraint);
             return panel;
+
         }
 
-
         protected JPanel makeLearningSessionPanel(String text) {
+            //TODO: Losowanie fiszek dla danej sesji z podanego zakresu i wybór trudności
             FlashcardIterator learningIterator = new LearningIterator(flashcardCollection);
             flashcardCollection.createIterator(learningIterator);
 
             //Main panel
             JPanel panel = new JPanel();
             Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
-            //TODO: Pobawić się LayoutMngrmi i wycentrować fiszkę na ekranie
+
 //            panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
             panel.setLayout(new GridBagLayout());
             //Info about the flashcard Panel
