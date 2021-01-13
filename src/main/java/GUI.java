@@ -60,8 +60,8 @@ public class GUI {
 
             Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
             //TODO: Pobawić się LayoutMngrmi i wycentrować fiszkę na ekranie
-            panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
-
+//            panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
+            panel.setLayout(new GridBagLayout());
             //Info about the flashcard Panel
             //Answers Panel
             JPanel flashcardPanel = flashcard.getFlashcardPanel();
@@ -79,8 +79,8 @@ public class GUI {
             JPanel panel = new JPanel();
             Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
             //TODO: Pobawić się LayoutMngrmi i wycentrować fiszkę na ekranie
-            panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
-
+//            panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
+            panel.setLayout(new GridBagLayout());
             //Info about the flashcard Panel
             //Answers Panel
             JPanel flashcardPanel = flashcard.getFlashcardPanel();
