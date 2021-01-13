@@ -1,5 +1,9 @@
 package Flashcards;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -10,8 +14,8 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
     private ArrayList<Integer> randomized_option = new ArrayList<>();
 
     public Level3Flashcard(Flashcard wrapee) {
-
         super(wrapee);
+        type = FlashcardFactory.createFlashcardType("type2",2, Color.ORANGE,10,10);
         for (int i = 0; i < this.options.size(); i++){
             randomized_option.add(i);
         }
@@ -19,11 +23,11 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
     }
 
     @Override
-    public void viewFlashcard(String canvas) {
+    protected void randomizeAnswers() {
         Random rand = new Random();
         int randomized_number_for_random_answers = rand.nextInt();
         System.out.println("Level 3");
-        super.viewFlashcard(canvas);
+        super.viewFlashcard("");
         if(randomized_number_for_random_answers%4 == 0){
             answers[0] = options.get(randomized_option.get(0));
             System.out.println("A. " + answers[0]);
@@ -79,6 +83,68 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
             System.out.println("D. " + answers[3]);
 
         }
+    }
+
+
+    @Override
+    public JPanel getFlashcardPanel() {
+        randomizeAnswers();
+
+        // Flashcard
+        JPanel flashcardPanel = new JPanel();
+        flashcardPanel.setBackground(type.getColor());
+        JLabel flashcardTranslatedLabel = new JLabel(this.translatedWord);
+        JLabel levelLabel = new JLabel("Level 2");
+        JLabel flashcardLanguageLabel = new JLabel(this.languageWord);
+        JLabel userAnswer = new JLabel("");
+        flashcardPanel.setLayout(new BoxLayout(flashcardPanel,BoxLayout.PAGE_AXIS));
+
+        JButton answerA = new JButton("A. " + answers[0]);
+        JButton answerB = new JButton("B. " + answers[1]);
+        JButton answerC = new JButton("C. " + answers[2]);
+        JButton answerD = new JButton("D. " + answers[3]);
+        answerA.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("A");
+                setAnswer("A");
+            }
+        });
+
+        answerB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("B");
+                setAnswer("B");
+            }
+        });
+
+        answerC.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("C");
+                setAnswer("C");
+            }
+        });
+
+        answerD.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("D");
+                setAnswer("D");
+            }
+        });
+
+        flashcardPanel.add(levelLabel);
+        flashcardPanel.add(flashcardLanguageLabel);
+        flashcardPanel.add(flashcardTranslatedLabel);
+        flashcardPanel.add(answerA);
+        flashcardPanel.add(answerB);
+        flashcardPanel.add(answerC);
+        flashcardPanel.add(answerD);
+        flashcardPanel.add(userAnswer);
+
+        return flashcardPanel;
     }
 
     @Override
