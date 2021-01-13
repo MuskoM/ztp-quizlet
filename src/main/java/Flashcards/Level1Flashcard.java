@@ -1,14 +1,25 @@
 package Flashcards;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Level1Flashcard extends FlashcardBaseDecorator{
 
     private String[] answers = new String[2];
-    private int randomized_option;
+    private ArrayList<Integer> randomized_option = new ArrayList<>();
 
     public Level1Flashcard(Flashcard wrapee) {
         super(wrapee);
+        type = FlashcardFactory.createFlashcardType("1",1, Color.GREEN,10,10);
+        for (int i = 0; i < this.options.size(); i++){
+            randomized_option.add(i);
+        }
+        Collections.shuffle(randomized_option);
     }
 
     /***
@@ -18,11 +29,10 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
     @Override
     public void viewFlashcard(String canvas) {
         Random rand = new Random();
-        randomized_option = rand.nextInt(options.size());
         System.out.println("Level 1");
         super.viewFlashcard(canvas);
         if(rand.nextInt()%2 == 0){
-            answers[0] = options.get(randomized_option%options.size());
+            answers[0] = options.get(randomized_option.get(0));
             System.out.println("A. " + answers[0]);
 
             answers[1] = languageWord;
@@ -32,9 +42,67 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
             answers[0] = languageWord;
             System.out.println("A. " + languageWord);
 
-            answers[1] = options.get(randomized_option%options.size());
+            answers[1] = options.get(randomized_option.get(1));
             System.out.println("B. " + answers[1]);
         }
+    }
+
+    @Override
+    protected void randomizeAnswers() {
+        Random rand = new Random();
+        if(rand.nextInt()%2 == 0){
+            answers[0] = options.get(randomized_option.get(0));
+
+            answers[1] = languageWord;
+
+        }else{
+            answers[0] = languageWord;
+
+            answers[1] = options.get(randomized_option.get(1));
+        }
+    }
+
+    public JPanel getFlashcardPanel() {
+
+        randomizeAnswers();
+
+        // Flashcard
+        JPanel flashcardPanel = new JPanel();
+        flashcardPanel.setBackground(type.getColor());
+        JLabel flashcardTranslatedLabel = new JLabel(this.translatedWord);
+        JLabel levelLabel = new JLabel("Level 1");
+        JLabel flashcardLanguageLabel = new JLabel(this.languageWord);
+        JLabel userAnswer = new JLabel("");
+        flashcardPanel.setLayout(new BoxLayout(flashcardPanel,BoxLayout.PAGE_AXIS));
+
+        JButton answerA = new JButton("A. " + answers[0]);
+        JButton answerB = new JButton("B. " + answers[1]);
+        answerA.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("A");
+                setAnswer("A");
+            }
+        });
+
+        answerB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("B");
+                setAnswer("B");
+            }
+        });
+
+        flashcardPanel.add(levelLabel);
+        flashcardPanel.add(flashcardLanguageLabel);
+        flashcardPanel.add(flashcardTranslatedLabel);
+        flashcardPanel.add(answerA);
+        flashcardPanel.add(answerB);
+        flashcardPanel.add(userAnswer);
+
+        System.out.println("Level 1");
+
+        return flashcardPanel;
     }
 
     @Override

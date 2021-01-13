@@ -2,6 +2,7 @@ package Flashcards;
 
 import Summarization.Summarization;
 
+import javax.swing.*;
 import java.util.List;
 
 public class Flashcard {
@@ -43,21 +44,14 @@ public class Flashcard {
         return summContext.finalizeSummary(languageWord, answer);
     }
 
+    public JPanel getFlashcardPanel(){return new JPanel();}
+
+    protected void randomizeAnswers(){};
+
     public String getBaseWord() {
         return languageWord;
     }
 
-    public void setBaseWord(String baseWord) {
-        this.languageWord = baseWord;
-    }
-
-    public String getTranslatedWord() {
-        return translatedWord;
-    }
-
-    public void setTranslatedWord(String translatedWord) {
-        this.translatedWord = translatedWord;
-    }
 
     public String getAnswer() {
         return answer;
@@ -83,6 +77,7 @@ public class Flashcard {
     public FlashcardType getType() {
         return type;
     }
+
 
     public void setOptions(List<String> options) {
         this.options = options;

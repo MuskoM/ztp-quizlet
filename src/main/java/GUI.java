@@ -1,4 +1,7 @@
 import Flashcards.Flashcard;
+import Flashcards.FlashcardFactory;
+import Flashcards.Level1Flashcard;
+import Flashcards.Level2Flashcard;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -10,12 +13,10 @@ import java.awt.event.KeyEvent;
 
 public class GUI {
 
-
-
-
     static class TabbedPane extends JPanel {
 
         private Database database;
+        private FlashcardFactory flashcardFactory = new FlashcardFactory();
         private FlashcardCollection  flashcardCollection;
 
         public TabbedPane(Database database) {
@@ -52,14 +53,17 @@ public class GUI {
         }
 
         protected JPanel makeLearningSessionPanel(String text) {
-            JPanel panel = new JPanel(false);
-            JLabel filler = new JLabel(flashcardCollection.getFlashcards().get(0).toString());
-            panel.setLayout(new GridBagLayout());
+            //Main panel
+            JPanel panel = new JPanel();
+            Flashcard flashcard = new Level2Flashcard(flashcardCollection.getFlashcards().get(0));
 
+            panel.setLayout(new BoxLayout(panel,BoxLayout.PAGE_AXIS));
 
+            //Info about the flashcard Panel
+            //Answers Panel
+            JPanel answersPanel = flashcard.getFlashcardPanel();
 
-
-            panel.add(filler);
+            panel.add(answersPanel);
             return panel;
         }
 

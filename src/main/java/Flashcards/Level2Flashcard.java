@@ -1,6 +1,9 @@
 package Flashcards;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 
 public class Level2Flashcard extends FlashcardBaseDecorator{
@@ -17,11 +20,11 @@ public class Level2Flashcard extends FlashcardBaseDecorator{
     }
 
     @Override
-    public void viewFlashcard(String canvas) {
+    protected void randomizeAnswers() {
         Random rand = new Random();
         int randomized_number_for_random_answers = rand.nextInt();
         System.out.println("Level 2");
-        super.viewFlashcard(canvas);
+        super.viewFlashcard("canvas");
         if(randomized_number_for_random_answers%3 == 0){
             answers[0] = options.get(randomized_option.get(0));
             System.out.println("A. " + answers[0]);
@@ -52,6 +55,61 @@ public class Level2Flashcard extends FlashcardBaseDecorator{
             System.out.println("C. " + answers[2]);
         }
     }
+
+    public JPanel getFlashcardPanel() {
+
+        randomizeAnswers();
+
+        // Flashcard
+        JPanel flashcardPanel = new JPanel();
+        flashcardPanel.setBackground(type.getColor());
+        JLabel flashcardTranslatedLabel = new JLabel(this.translatedWord);
+        JLabel levelLabel = new JLabel("Level 2");
+        JLabel flashcardLanguageLabel = new JLabel(this.languageWord);
+        JLabel userAnswer = new JLabel("");
+        flashcardPanel.setLayout(new BoxLayout(flashcardPanel,BoxLayout.PAGE_AXIS));
+
+        JButton answerA = new JButton("A. " + answers[0]);
+        JButton answerB = new JButton("B. " + answers[1]);
+        JButton answerC = new JButton("B. " + answers[2]);
+        answerA.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("A");
+                setAnswer("A");
+            }
+        });
+
+        answerB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("B");
+                setAnswer("B");
+            }
+        });
+
+        answerB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userAnswer.setText("C");
+                setAnswer("C");
+            }
+        });
+
+        flashcardPanel.add(levelLabel);
+        flashcardPanel.add(flashcardLanguageLabel);
+        flashcardPanel.add(flashcardTranslatedLabel);
+        flashcardPanel.add(answerA);
+        flashcardPanel.add(answerB);
+        flashcardPanel.add(answerC);
+        flashcardPanel.add(userAnswer);
+
+        System.out.println("Level 1");
+
+        return flashcardPanel;
+    }
+
+
 
     @Override
     public void setAnswer(String answer) {

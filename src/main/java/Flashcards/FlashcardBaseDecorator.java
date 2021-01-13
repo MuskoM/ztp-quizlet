@@ -9,12 +9,7 @@ public class FlashcardBaseDecorator extends Flashcard {
         this.languageWord = wrapee.languageWord;
         this.translatedWord = wrapee.translatedWord;
         this.options = wrapee.options;
-    }
-
-
-    @Override
-    public void viewFlashcard(String canvas) {
-        super.viewFlashcard(canvas);
+        this.type = wrapee.type;
     }
 
 }
