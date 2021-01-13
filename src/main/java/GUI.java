@@ -67,6 +67,11 @@ public class GUI {
             JPanel flashcardPanel = flashcard.getFlashcardPanel();
 
             panel.add(flashcardPanel);
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setMinimum(0);
+            progressBar.setMaximum(flashcardCollection.getFlashcardAmount());
+            progressBar.setValue(0);
+
             return panel;
         }
 
