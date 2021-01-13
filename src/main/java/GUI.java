@@ -23,7 +23,7 @@ public class GUI {
             flashcardCollection = new FlashcardCollection(database,"pol-eng");
 
             JTabbedPane tabbedPane = new JTabbedPane();
-            ImageIcon leariningTabIcon = createImageIcon("icons/dices.png");
+            ImageIcon learningTabIcon = createImageIcon("icons/dices.png");
             ImageIcon testTabIcon = createImageIcon("icons/book.png");
             ImageIcon databaseTabIcon = createImageIcon("icons/database-storage.png");
 
@@ -33,7 +33,7 @@ public class GUI {
             tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
             JComponent panel2 = makeLearningSessionPanel("Panel #2");
-            tabbedPane.addTab("Learning", leariningTabIcon, panel2,
+            tabbedPane.addTab("Learning", learningTabIcon, panel2,
                     "Learn your language");
             tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
 
@@ -50,14 +50,15 @@ public class GUI {
         }
 
         protected JPanel makeTestSessionPanel(String text) {
-            //TODO: Zaimplementować iterator testowy
+            FlashcardIterator testIterator = new TestIterator(flashcardCollection);
+            flashcardCollection.createIterator(testIterator);
 
             //Main panel
             JPanel panel = new JPanel();
 
             //TODO: Add progressbar
 
-            Flashcard flashcard = new Level3Flashcard(flashcardCollection.getFlashcards().get(0));
+            Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
             //TODO: Pobawić się LayoutMngrmi i wycentrować fiszkę na ekranie
             panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
 
@@ -71,11 +72,12 @@ public class GUI {
 
 
         protected JPanel makeLearningSessionPanel(String text) {
-            //TODO: Zaimplementować iterator uczący
+            FlashcardIterator learningIterator = new LearningIterator(flashcardCollection);
+            flashcardCollection.createIterator(learningIterator);
 
             //Main panel
             JPanel panel = new JPanel();
-            Flashcard flashcard = new Level3Flashcard(flashcardCollection.getFlashcards().get(0));
+            Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
             //TODO: Pobawić się LayoutMngrmi i wycentrować fiszkę na ekranie
             panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
 
