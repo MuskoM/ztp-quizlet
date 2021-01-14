@@ -1,4 +1,5 @@
 import Flashcards.*;
+import kotlin.jvm.JvmPackageName;
 
 import javax.imageio.ImageIO;
 import javax.print.DocFlavor;
@@ -63,6 +64,8 @@ public class GUI {
 
             //Main panel
             JPanel panel = new JPanel();
+
+
             Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
 
             panel.setLayout(new GridBagLayout());
@@ -199,6 +202,7 @@ public class GUI {
                     tableModelAdapter.setValueAt(arr[1],flashcardTable.getRowCount(),1);
                 }
             });
+
 
             JButton removeFlashcardBtn = new JButton("Remove pair");
 
