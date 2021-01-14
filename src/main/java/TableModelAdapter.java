@@ -1,6 +1,5 @@
 import Flashcards.Flashcard;
 import javax.swing.table.AbstractTableModel;
-import javax.xml.crypto.Data;
 import java.util.List;
 
 public class TableModelAdapter extends AbstractTableModel {
@@ -8,7 +7,7 @@ public class TableModelAdapter extends AbstractTableModel {
     private List<Flashcard> flashcards;
     private Database database;
     private String collection;
-    private String searchField;
+    private String searchString;
 
     public TableModelAdapter(List<Flashcard> flashcards, Database database, String _collection){
         this.flashcards = flashcards;
@@ -35,12 +34,13 @@ public class TableModelAdapter extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+
         if (columnIndex == 0){
-            searchField = flashcards.get(rowIndex).getLanguageWord();
-            return searchField;
+            searchString = flashcards.get(rowIndex).getLanguageWord();
+            return searchString;
         }else {
-            searchField = flashcards.get(rowIndex).getTranslatedWord();
-            return searchField;
+            searchString = flashcards.get(rowIndex).getTranslatedWord();
+            return searchString;
         }
     }
 
@@ -66,13 +66,13 @@ public class TableModelAdapter extends AbstractTableModel {
             Flashcard f = flashcards.get(rowIndex);
             f.setLanguageWord(aValue.toString());
             flashcards.set(rowIndex,f);
-            database.editFlashcard("languageWord",searchField,aValue.toString(),collection);
+            database.editFlashcard("languageWord", searchString,aValue.toString(),collection);
 
         }else{
             Flashcard f = flashcards.get(rowIndex);
             f.setTranslatedWord(aValue.toString());
             flashcards.set(rowIndex,f);
-            database.editFlashcard("translatedWord",searchField,aValue.toString(),collection);
+            database.editFlashcard("translatedWord", searchString,aValue.toString(),collection);
         }
 
     }

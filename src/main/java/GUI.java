@@ -1,4 +1,5 @@
 import Flashcards.*;
+import kotlin.jvm.JvmPackageName;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -301,6 +302,7 @@ public class GUI {
                 tableModelAdapter.setValueAt(arr[0], flashcardTable.getRowCount(), 0);
                 tableModelAdapter.setValueAt(arr[1], flashcardTable.getRowCount(), 1);
             });
+
 
             JButton removeFlashcardBtn = new JButton("Remove pair");
 

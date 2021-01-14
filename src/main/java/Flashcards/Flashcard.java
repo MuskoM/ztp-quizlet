@@ -64,6 +64,8 @@ public class Flashcard {
         return translatedWord;
     }
 
+
+
     public String getAnswer() {
         return answer;
     }
