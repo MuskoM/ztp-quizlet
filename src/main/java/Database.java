@@ -6,7 +6,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /***
@@ -45,8 +44,20 @@ public class Database {
         return this.database.getCollection(collectionName);
     }
 
+    public List getCollectionsNames(){
+        List<String> arrayList = new ArrayList<>();
+        MongoIterable<String> collNames = database.listCollectionNames();
+        collNames.forEach(arrayList::add);
+        return arrayList;
+    }
+
     public void addCollection(String collectionName){
         database.createCollection(collectionName);
+    }
+
+    public void removeCollection(String collectionName){
+        MongoCollection mg = this.database.getCollection(collectionName);
+        mg.drop();
     }
 
     public List getOptionWords(String field_name){

@@ -62,11 +62,13 @@ public class Level2Flashcard extends FlashcardBaseDecorator{
 
         // Flashcard
         JPanel flashcardPanel = new JPanel();
+        JPanel buttonsPanel = new JPanel();
         flashcardPanel.setBackground(type.getColor());
         JLabel flashcardTranslatedLabel = new JLabel(this.translatedWord);
         JLabel levelLabel = new JLabel("Level 2");
         JLabel flashcardLanguageLabel = new JLabel(this.languageWord);
         JLabel userAnswer = new JLabel("");
+        buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.LINE_AXIS));
         flashcardPanel.setLayout(new BoxLayout(flashcardPanel,BoxLayout.PAGE_AXIS));
 
         JButton answerA = new JButton("A. " + answers[0]);
@@ -99,9 +101,10 @@ public class Level2Flashcard extends FlashcardBaseDecorator{
         flashcardPanel.add(levelLabel);
         flashcardPanel.add(flashcardLanguageLabel);
         flashcardPanel.add(flashcardTranslatedLabel);
-        flashcardPanel.add(answerA);
-        flashcardPanel.add(answerB);
-        flashcardPanel.add(answerC);
+        buttonsPanel.add(answerA);
+        buttonsPanel.add(answerC);
+        buttonsPanel.add(answerB);
+        flashcardPanel.add(buttonsPanel);
         flashcardPanel.add(userAnswer);
 
         System.out.println("Level 1");

@@ -85,9 +85,7 @@ public class Flashcard {
 
     @Override
     public String toString() {
-        return "Flashcard{" +
-                "languageWord='" + languageWord + '\'' +
-                ", translatedWord='" + translatedWord + '\'' +
-                '}';
+        return  languageWord + ":"
+                + translatedWord;
     }
 }
