@@ -1,5 +1,4 @@
 import Flashcards.*;
-import kotlin.jvm.JvmPackageName;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
