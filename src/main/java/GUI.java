@@ -4,6 +4,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +18,6 @@ public class GUI {
 
         private Database database;
         private FlashcardCollection  flashcardCollection;
-        private JList<Flashcard> flashcardList;
 
         public TabbedPane(Database database) {
             super(new GridLayout(1, 1));
@@ -149,43 +150,30 @@ public class GUI {
 
         protected JPanel makeDatabaseMgmntPanel(){
             JPanel panel = new JPanel();
+            JSplitPane databaseViewer = new JSplitPane();
+
             List collNames = database.getCollectionsNames();
             JList<String> collNamesList = new JList(collNames.toArray());
-            this.flashcardList = new JList(flashcardCollection.getFlashcards().toArray());
+            collNamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            JScrollPane scrollPane = new JScrollPane(collNamesList);
+            scrollPane.setBorder(BorderFactory.createTitledBorder("Languages"));
+            databaseViewer.setLeftComponent(scrollPane);
 
-            JSplitPane databaseViewer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,collNamesList, flashcardList);
-            databaseViewer.setOneTouchExpandable(true);
-            databaseViewer.setDividerLocation(150);
-            Dimension minSize = new Dimension(200,200);
-            collNamesList.setMinimumSize(minSize);
-            flashcardList.setMinimumSize(minSize);
+            TableModelAdapter tableModelAdapter = new TableModelAdapter(flashcardCollection.getFlashcards(),database,"pol-eng");
+            JTable flashcardTable = new JTable(tableModelAdapter);
+            scrollPane = new JScrollPane(flashcardTable);
+            scrollPane.setBorder(BorderFactory.createTitledBorder("Flashcards"));
+            databaseViewer.setRightComponent(scrollPane);
 
-            JLabel testLabel = new JLabel();
+
 
             collNamesList.addListSelectionListener(new ListSelectionListener() {
                 @Override
                 public void valueChanged(ListSelectionEvent e) {
-
-                    FlashcardCollection fc = new FlashcardCollection(database,collNamesList.getSelectedValue());
-                    flashcardList = new JList(fc.getFlashcards().toArray());
-
-                    databaseViewer.setRightComponent(flashcardList);
+                    flashcardCollection = new FlashcardCollection(database,collNamesList.getSelectedValue());
+                    tableModelAdapter.setFlashcards(flashcardCollection.getFlashcards(),collNamesList.getSelectedValue());
                 }
             });
-
-            JList c = (JList) databaseViewer.getRightComponent();
-            c.addListSelectionListener(new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    System.out.println(c.getSelectedValue());
-                }
-            });
-
-            flashcardList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-            flashcardList.setVisibleRowCount(-1);
-
-            collNamesList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-            collNamesList.setVisibleRowCount(-1);
 
 
             panel.add(databaseViewer);

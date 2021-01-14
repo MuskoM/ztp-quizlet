@@ -48,10 +48,21 @@ public class Flashcard {
 
     protected void randomizeAnswers(){};
 
-    public String getBaseWord() {
+    public String getLanguageWord() {
         return languageWord;
     }
 
+    public void setLanguageWord(String languageWord) {
+        this.languageWord = languageWord;
+    }
+
+    public void setTranslatedWord(String translatedWord) {
+        this.translatedWord = translatedWord;
+    }
+
+    public String getTranslatedWord() {
+        return translatedWord;
+    }
 
     public String getAnswer() {
         return answer;

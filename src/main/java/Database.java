@@ -2,9 +2,13 @@ import Flashcards.Flashcard;
 import com.mongodb.DBObject;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.result.UpdateResult;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +53,17 @@ public class Database {
         MongoIterable<String> collNames = database.listCollectionNames();
         collNames.forEach(arrayList::add);
         return arrayList;
+    }
+
+    public void editFlashcard(String searchField, String searchString, String data, String collection){
+
+        MongoCollection<Document> col = database.getCollection(collection);
+
+        Bson filter = eq(searchField, searchString);
+        Bson updateOperation = set(searchField,data);
+        UpdateResult updateResult = col.updateOne(filter,updateOperation);
+        System.out.println(updateResult);
+
     }
 
     public void addCollection(String collectionName){
