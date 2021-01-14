@@ -48,7 +48,7 @@ public class Database {
         return this.database.getCollection(collectionName);
     }
 
-    public List getCollectionsNames(){
+    public List<String> getCollectionsNames(){
         List<String> arrayList = new ArrayList<>();
         MongoIterable<String> collNames = database.listCollectionNames();
         collNames.forEach(arrayList::add);
@@ -73,6 +73,18 @@ public class Database {
     public void removeCollection(String collectionName){
         MongoCollection mg = this.database.getCollection(collectionName);
         mg.drop();
+    }
+
+    public void addFlashcard(String languageWord, String translatedWord, String collection){
+        MongoCollection mg = this.database.getCollection(collection);
+        Document testDoc = new Document("languageWord",languageWord).append("translatedWord",translatedWord);
+        mg.insertOne(testDoc);
+    }
+
+    public void removeFlashcard(String languageWord, String collection){
+        MongoCollection mg = this.database.getCollection(collection);
+        Bson filter = eq("languageWord", languageWord);
+        mg.deleteOne(filter);
     }
 
     public List getOptionWords(String field_name){

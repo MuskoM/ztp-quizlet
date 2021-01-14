@@ -1,6 +1,7 @@
 import Flashcards.*;
 
 import javax.imageio.ImageIO;
+import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -18,6 +19,7 @@ public class GUI {
 
         private Database database;
         private FlashcardCollection  flashcardCollection;
+        private JList<String> collNamesList;
 
         public TabbedPane(Database database) {
             super(new GridLayout(1, 1));
@@ -114,6 +116,26 @@ public class GUI {
 
         protected JPanel makeDataPanel(){
             JPanel panel = new JPanel();
+
+            return panel;
+        }
+
+
+        protected JPanel makeDatabaseMgmntPanel(){
+            JPanel panel = new JPanel();
+            JSplitPane databaseViewer = new JSplitPane();
+            panel.setLayout(new BoxLayout(panel,BoxLayout.PAGE_AXIS));
+
+            JPanel languagesPanel = new JPanel();
+            List<String> collNames = database.getCollectionsNames();
+            DefaultListModel<String> listAdapter = new DefaultListModel<>();
+            listAdapter.addAll(collNames);
+            collNamesList = new JList<String>(listAdapter);
+            collNamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            JScrollPane scrollPane = new JScrollPane(collNamesList);
+            scrollPane.setBorder(BorderFactory.createTitledBorder("Languages"));
+            languagesPanel.add(scrollPane);
+
             JButton addCollection = new JButton("Add new language");
 
             addCollection.addActionListener(new ActionListener() {
@@ -125,6 +147,8 @@ public class GUI {
                             JOptionPane.INFORMATION_MESSAGE);
                     try{
                         database.addCollection(value);
+                        listAdapter.addElement(value);
+
                     } catch(Exception ex) {
                         //FIXME add exception handling!
                         /* ... */
@@ -137,34 +161,57 @@ public class GUI {
             deleteCollection.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    int confirm = JOptionPane.showConfirmDialog(panel,
+                            "Do you want to delete " + collNamesList.getSelectedValue() + "?"
+                    );
 
+                    if(confirm == JOptionPane.YES_NO_OPTION){
+                        database.removeCollection(collNamesList.getSelectedValue());
+                        listAdapter.removeElementAt(collNamesList.getSelectedIndex());
+                    }
                 }
             });
+            languagesPanel.setLayout(new BoxLayout(languagesPanel,BoxLayout.PAGE_AXIS));
+            languagesPanel.add(addCollection);
+            languagesPanel.add(deleteCollection);
+            databaseViewer.setLeftComponent(languagesPanel);
 
-            panel.add(addCollection);
-            panel.add(deleteCollection);
-
-            return panel;
-        }
-
-
-        protected JPanel makeDatabaseMgmntPanel(){
-            JPanel panel = new JPanel();
-            JSplitPane databaseViewer = new JSplitPane();
-
-            List collNames = database.getCollectionsNames();
-            JList<String> collNamesList = new JList(collNames.toArray());
-            collNamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            JScrollPane scrollPane = new JScrollPane(collNamesList);
-            scrollPane.setBorder(BorderFactory.createTitledBorder("Languages"));
-            databaseViewer.setLeftComponent(scrollPane);
-
+            JPanel flashcardsTablePanel = new JPanel();
             TableModelAdapter tableModelAdapter = new TableModelAdapter(flashcardCollection.getFlashcards(),database,"pol-eng");
             JTable flashcardTable = new JTable(tableModelAdapter);
             scrollPane = new JScrollPane(flashcardTable);
             scrollPane.setBorder(BorderFactory.createTitledBorder("Flashcards"));
-            databaseViewer.setRightComponent(scrollPane);
 
+            flashcardsTablePanel.add(scrollPane);
+            flashcardsTablePanel.setLayout(new BoxLayout(flashcardsTablePanel,BoxLayout.PAGE_AXIS));
+
+            JButton addFlashcardBtn = new JButton("Add pair");
+
+            addFlashcardBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String userInput = JOptionPane.showInputDialog("Input your pair here",
+                            "foreignLanguage:yourLanguage");
+                    String[] arr = userInput.split(":");
+                    System.out.println(arr[0] + " " + arr[1] );
+                    database.addFlashcard(arr[0],arr[1],collNamesList.getSelectedValue());
+                    tableModelAdapter.setValueAt(arr[0],flashcardTable.getRowCount(),0);
+                    tableModelAdapter.setValueAt(arr[1],flashcardTable.getRowCount(),1);
+                }
+            });
+
+            JButton removeFlashcardBtn = new JButton("Remove pair");
+
+            removeFlashcardBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                }
+            });
+
+            flashcardsTablePanel.add(addFlashcardBtn);
+            flashcardsTablePanel.add(removeFlashcardBtn);
+
+            databaseViewer.setRightComponent(flashcardsTablePanel);
 
 
             collNamesList.addListSelectionListener(new ListSelectionListener() {
@@ -174,6 +221,7 @@ public class GUI {
                     tableModelAdapter.setFlashcards(flashcardCollection.getFlashcards(),collNamesList.getSelectedValue());
                 }
             });
+
 
 
             panel.add(databaseViewer);
@@ -207,5 +255,12 @@ public class GUI {
 
 
     }
+
+    public class FlashcardInputDialog extends JDialog{
+
+
+
+    }
+
 
 }
