@@ -1,12 +1,10 @@
 import Flashcards.*;
 
-import javax.imageio.ImageIO;
-import javax.print.DocFlavor;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,14 +16,16 @@ public class GUI {
     static class TabbedPane extends JPanel {
 
         private Database database;
-        private FlashcardCollection  flashcardCollection;
+        private FlashcardCollection flashcardCollection;
         private JList<String> collNamesList;
+        private int level = 1;
+        private int flashcardAmount = 10;
 
         public TabbedPane(Database database) {
             super(new GridLayout(1, 1));
             //TODO: Zrobić ekran startowy dla testów i learningu
             this.database = database;
-            flashcardCollection = new FlashcardCollection(database,"pol-eng");
+            flashcardCollection = new FlashcardCollection(database, "pol-eng");
 
             JTabbedPane tabbedPane = new JTabbedPane();
             ImageIcon learningTabIcon = createImageIcon("icons/dices.png");
@@ -62,24 +62,134 @@ public class GUI {
             flashcardCollection.createIterator(testIterator);
 
             //Main panel
-            JPanel panel = new JPanel();
+            JPanel mainPanel = new JPanel();
+            mainPanel.setLayout(new GridBagLayout());
+
+            //Subpanels - for starting session and for session itself
+            JPanel startPanel = new JPanel();
+            JPanel sessionPanel = new JPanel();
+
+            //--------------------------------------------------------------------------------
+            //Starting session panel
+            startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.PAGE_AXIS));
+            JButton startButton = new JButton(); //it's just here for the dicList and event listener
+
+            //Label
+            JLabel label = new JLabel();
+            label.setText("Configure your test session");
+            label.setHorizontalAlignment(JLabel.CENTER);
+            startPanel.add(label);
+
+            //Dictionary
+            JLabel dictionaryListLabel = new JLabel("Choose dictionary:", JLabel.CENTER);
+            startPanel.add(dictionaryListLabel);
+
+            JList dictionaryList = new JList(database.getCollectionsNames().toArray(new String[0]));
+            dictionaryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            dictionaryList.setLayoutOrientation(JList.VERTICAL);
+            dictionaryList.setVisibleRowCount(-1);
+
+            class DictionaryListListener implements ListSelectionListener {
+                public void valueChanged(ListSelectionEvent e) {
+                    JList source = (JList) e.getSource();
+                    if (!e.getValueIsAdjusting()) {
+                        startButton.setEnabled(source.getSelectedIndex() != -1);
+                    }
+                }
+            }
+            dictionaryList.addListSelectionListener(new DictionaryListListener());
+
+            JScrollPane dictionaryListScroller = new JScrollPane(dictionaryList);
+            dictionaryListScroller.setPreferredSize(new Dimension(100, 150));
+
+            startPanel.add(dictionaryListScroller);
+
+            //Level slider
+            JLabel levelSliderLabel = new JLabel("Choose your level:", JLabel.CENTER);
+            startPanel.add(levelSliderLabel);
+
+            JSlider levelSlider = new JSlider(JSlider.HORIZONTAL, 1, 4, 1);
+            levelSlider.setMajorTickSpacing(1);
+            levelSlider.setMinorTickSpacing(1);
+            levelSlider.setPaintTicks(true);
+            levelSlider.setPaintLabels(true);
+            levelSlider.setToolTipText("Level");
+
+            class LevelSliderListener implements ChangeListener {
+                public void stateChanged(ChangeEvent e) {
+                    JSlider source = (JSlider) e.getSource();
+
+                    if (!source.getValueIsAdjusting()) {
+                        level = (int) source.getValue();
+                    }
+                }
+            }
+            levelSlider.addChangeListener(new LevelSliderListener());
+
+            startPanel.add(levelSlider);
+
+            //Flashcard amount slider
+            JLabel amountSliderLabel = new JLabel("Choose how much words you want to test:");
+            startPanel.add(amountSliderLabel);
+
+            JSlider amountSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 10);
+            amountSlider.setMajorTickSpacing(5);
+            amountSlider.setMinorTickSpacing(1);
+            amountSlider.setPaintTicks(true);
+            amountSlider.setPaintLabels(true);
+            amountSlider.setToolTipText("Flashcard amount");
+
+            class FlashcardAmountSliderListener implements ChangeListener {
+                public void stateChanged(ChangeEvent e) {
+                    JSlider source = (JSlider) e.getSource();
+
+                    if (!source.getValueIsAdjusting()) {
+                        flashcardAmount = (int) source.getValue();
+                    }
+                }
+            }
+            amountSlider.addChangeListener(new FlashcardAmountSliderListener());
+
+            startPanel.add(amountSlider);
+
+            //Start session button
+            startButton.setText("Start test session");
+            startButton.setActionCommand("start-session");
+
+            class StartButtonListener implements ActionListener {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if ("start-session".equals(e.getActionCommand())) {
+                        mainPanel.removeAll();
+                        mainPanel.revalidate();
+                        mainPanel.repaint();
+                        mainPanel.add(sessionPanel);
+                    }
+                }
+            }
+            startButton.addActionListener(new StartButtonListener());
+
+            startPanel.add(startButton);
+
+            //--------------------------------------------------------------------------------
+            //Session panel
             Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
 
-            panel.setLayout(new GridBagLayout());
+            sessionPanel.setLayout(new GridBagLayout());
 
-            GridBagConstraints flashcardconstraint = new GridBagConstraints();
+            GridBagConstraints flashcardConstraint = new GridBagConstraints();
             GridBagConstraints progressBarConstraint = new GridBagConstraints();
-            flashcardconstraint.weighty = 0.5;
-            flashcardconstraint.weightx = 0.5;
+            flashcardConstraint.weighty = 0.5;
+            flashcardConstraint.weightx = 0.5;
             progressBarConstraint.weightx = 0.5;
             progressBarConstraint.weighty = 0.5;
             //Info about the flashcard Panel
             //Answers Panel
             JPanel flashcardPanel = flashcard.getFlashcardPanel();
-            flashcardconstraint.anchor = GridBagConstraints.CENTER;
-            flashcardconstraint.gridy = 2;
-            flashcardconstraint.gridx = 0;
-            panel.add(flashcardPanel, flashcardconstraint);
+            flashcardConstraint.anchor = GridBagConstraints.CENTER;
+            flashcardConstraint.gridy = 2;
+            flashcardConstraint.gridx = 0;
+            sessionPanel.add(flashcardPanel, flashcardConstraint);
 
             JProgressBar progressBar = new JProgressBar();
             progressBar.setMinimum(0);
@@ -90,8 +200,11 @@ public class GUI {
             progressBarConstraint.gridy = 2;
             progressBarConstraint.gridx = 0;
             progressBarConstraint.gridwidth = 3;
-            panel.add(progressBar, progressBarConstraint);
-            return panel;
+            sessionPanel.add(progressBar, progressBarConstraint);
+
+            //----------------------------------------------------------------------------------------
+            mainPanel.add(startPanel);
+            return mainPanel;
 
         }
 
@@ -114,23 +227,21 @@ public class GUI {
             return panel;
         }
 
-        protected JPanel makeDataPanel(){
-            JPanel panel = new JPanel();
-
-            return panel;
+        protected JPanel makeDataPanel() {
+            return new JPanel();
         }
 
 
-        protected JPanel makeDatabaseMgmntPanel(){
+        protected JPanel makeDatabaseMgmntPanel() {
             JPanel panel = new JPanel();
             JSplitPane databaseViewer = new JSplitPane();
-            panel.setLayout(new BoxLayout(panel,BoxLayout.PAGE_AXIS));
+            panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
             JPanel languagesPanel = new JPanel();
             List<String> collNames = database.getCollectionsNames();
             DefaultListModel<String> listAdapter = new DefaultListModel<>();
             listAdapter.addAll(collNames);
-            collNamesList = new JList<String>(listAdapter);
+            collNamesList = new JList<>(listAdapter);
             collNamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             JScrollPane scrollPane = new JScrollPane(collNamesList);
             scrollPane.setBorder(BorderFactory.createTitledBorder("Languages"));
@@ -138,74 +249,62 @@ public class GUI {
 
             JButton addCollection = new JButton("Add new language");
 
-            addCollection.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String value = JOptionPane.showInputDialog(panel,
-                            "Give language pair ex. eng-pol",
-                            "Add Collection",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    try{
-                        database.addCollection(value);
-                        listAdapter.addElement(value);
+            addCollection.addActionListener(e -> {
+                String value = JOptionPane.showInputDialog(panel,
+                        "Give language pair ex. eng-pol",
+                        "Add Collection",
+                        JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    database.addCollection(value);
+                    listAdapter.addElement(value);
 
-                    } catch(Exception ex) {
-                        //FIXME add exception handling!
-                        /* ... */
-                    };
+                } catch (Exception ex) {
+                    //FIXME add exception handling!
+                    /* ... */
                 }
             });
 
             JButton deleteCollection = new JButton("Delete language");
 
-            deleteCollection.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    int confirm = JOptionPane.showConfirmDialog(panel,
-                            "Do you want to delete " + collNamesList.getSelectedValue() + "?"
-                    );
+            deleteCollection.addActionListener(e -> {
+                int confirm = JOptionPane.showConfirmDialog(panel,
+                        "Do you want to delete " + collNamesList.getSelectedValue() + "?"
+                );
 
-                    if(confirm == JOptionPane.YES_NO_OPTION){
-                        database.removeCollection(collNamesList.getSelectedValue());
-                        listAdapter.removeElementAt(collNamesList.getSelectedIndex());
-                    }
+                if (confirm == JOptionPane.YES_NO_OPTION) {
+                    database.removeCollection(collNamesList.getSelectedValue());
+                    listAdapter.removeElementAt(collNamesList.getSelectedIndex());
                 }
             });
-            languagesPanel.setLayout(new BoxLayout(languagesPanel,BoxLayout.PAGE_AXIS));
+            languagesPanel.setLayout(new BoxLayout(languagesPanel, BoxLayout.PAGE_AXIS));
             languagesPanel.add(addCollection);
             languagesPanel.add(deleteCollection);
             databaseViewer.setLeftComponent(languagesPanel);
 
             JPanel flashcardsTablePanel = new JPanel();
-            TableModelAdapter tableModelAdapter = new TableModelAdapter(flashcardCollection.getFlashcards(),database,"pol-eng");
+            TableModelAdapter tableModelAdapter = new TableModelAdapter(flashcardCollection.getFlashcards(), database, "pol-eng");
             JTable flashcardTable = new JTable(tableModelAdapter);
             scrollPane = new JScrollPane(flashcardTable);
             scrollPane.setBorder(BorderFactory.createTitledBorder("Flashcards"));
 
             flashcardsTablePanel.add(scrollPane);
-            flashcardsTablePanel.setLayout(new BoxLayout(flashcardsTablePanel,BoxLayout.PAGE_AXIS));
+            flashcardsTablePanel.setLayout(new BoxLayout(flashcardsTablePanel, BoxLayout.PAGE_AXIS));
 
             JButton addFlashcardBtn = new JButton("Add pair");
 
-            addFlashcardBtn.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String userInput = JOptionPane.showInputDialog("Input your pair here",
-                            "foreignLanguage:yourLanguage");
-                    String[] arr = userInput.split(":");
-                    System.out.println(arr[0] + " " + arr[1] );
-                    database.addFlashcard(arr[0],arr[1],collNamesList.getSelectedValue());
-                    tableModelAdapter.setValueAt(arr[0],flashcardTable.getRowCount(),0);
-                    tableModelAdapter.setValueAt(arr[1],flashcardTable.getRowCount(),1);
-                }
+            addFlashcardBtn.addActionListener(e -> {
+                String userInput = JOptionPane.showInputDialog("Input your pair here",
+                        "foreignLanguage:yourLanguage");
+                String[] arr = userInput.split(":");
+                System.out.println(arr[0] + " " + arr[1]);
+                database.addFlashcard(arr[0], arr[1], collNamesList.getSelectedValue());
+                tableModelAdapter.setValueAt(arr[0], flashcardTable.getRowCount(), 0);
+                tableModelAdapter.setValueAt(arr[1], flashcardTable.getRowCount(), 1);
             });
 
             JButton removeFlashcardBtn = new JButton("Remove pair");
 
-            removeFlashcardBtn.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                }
+            removeFlashcardBtn.addActionListener(e -> {
             });
 
             flashcardsTablePanel.add(addFlashcardBtn);
@@ -214,14 +313,10 @@ public class GUI {
             databaseViewer.setRightComponent(flashcardsTablePanel);
 
 
-            collNamesList.addListSelectionListener(new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    flashcardCollection = new FlashcardCollection(database,collNamesList.getSelectedValue());
-                    tableModelAdapter.setFlashcards(flashcardCollection.getFlashcards(),collNamesList.getSelectedValue());
-                }
+            collNamesList.addListSelectionListener(e -> {
+                flashcardCollection = new FlashcardCollection(database, collNamesList.getSelectedValue());
+                tableModelAdapter.setFlashcards(flashcardCollection.getFlashcards(), collNamesList.getSelectedValue());
             });
-
 
 
             panel.add(databaseViewer);
@@ -229,16 +324,15 @@ public class GUI {
             return panel;
         }
 
-        protected JComponent makeDatabaseSessionPanel(){
+        protected JComponent makeDatabaseSessionPanel() {
             JPanel panel = new JPanel(false);
             JPanel databaseMgmtPanel = makeDatabaseMgmntPanel();
             JPanel dataPanel = makeDataPanel();
             panel.add(databaseMgmtPanel);
-            panel.setLayout(new BoxLayout(panel,BoxLayout.PAGE_AXIS));
+            panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
             panel.add(dataPanel);
             return panel;
         }
-
 
         /**
          * Returns an ImageIcon, or null if the path was invalid.
@@ -256,8 +350,7 @@ public class GUI {
 
     }
 
-    public class FlashcardInputDialog extends JDialog{
-
+    public class FlashcardInputDialog extends JDialog {
 
 
     }
