@@ -17,13 +17,14 @@ public class GUI {
 
         private Database database;
         private FlashcardCollection flashcardCollection;
+        private FlashcardIterator testIterator;
         private JList<String> collNamesList;
         private int level = 1;
         private int flashcardAmount = 10;
+        private Flashcard flashcard;
 
         public TabbedPane(Database database) {
             super(new GridLayout(1, 1));
-            //TODO: Zrobić ekran startowy dla testów i learningu
             this.database = database;
             flashcardCollection = new FlashcardCollection(database, "pol-eng");
 
@@ -58,9 +59,6 @@ public class GUI {
 
             //TODO: Losowanie fiszek dla danej sesji z podanego zakresu i wybór trudności
 
-            FlashcardIterator testIterator = new TestIterator(flashcardCollection);
-            flashcardCollection.createIterator(testIterator);
-
             //Main panel
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new GridBagLayout());
@@ -68,6 +66,43 @@ public class GUI {
             //Subpanels - for starting session and for session itself
             JPanel startPanel = new JPanel();
             JPanel sessionPanel = new JPanel();
+
+            //--------------------------------------------------------------------------------
+            //Session panel
+
+            testIterator = new TestIterator(flashcardCollection);
+            flashcardCollection.createIterator(testIterator);
+
+            flashcard = getNewFlashcard(level, true);
+
+            sessionPanel.setLayout(new GridBagLayout());
+
+            GridBagConstraints flashcardConstraint = new GridBagConstraints();
+            GridBagConstraints progressBarConstraint = new GridBagConstraints();
+            flashcardConstraint.weighty = 0.5;
+            flashcardConstraint.weightx = 0.5;
+            progressBarConstraint.weightx = 0.5;
+            progressBarConstraint.weighty = 0.5;
+            //Info about the flashcard Panel
+            //Answers Panel
+            JPanel flashcardPanel = flashcard.getFlashcardPanel();
+            flashcardConstraint.anchor = GridBagConstraints.CENTER;
+            flashcardConstraint.gridy = 2;
+            flashcardConstraint.gridx = 0;
+            sessionPanel.add(flashcardPanel, flashcardConstraint);
+
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setMinimum(0);
+            progressBar.setMaximum(flashcardCollection.getFlashcardAmount());
+            progressBar.setValue(0);
+            progressBarConstraint.fill = GridBagConstraints.HORIZONTAL;
+            progressBarConstraint.anchor = GridBagConstraints.PAGE_END;
+            progressBarConstraint.gridy = 2;
+            progressBarConstraint.gridx = 0;
+            progressBarConstraint.gridwidth = 3;
+            sessionPanel.add(progressBar, progressBarConstraint);
+
+            //----------------------------------------------------------------------------------------
 
             //--------------------------------------------------------------------------------
             //Starting session panel
@@ -94,6 +129,7 @@ public class GUI {
                     JList source = (JList) e.getSource();
                     if (!e.getValueIsAdjusting()) {
                         startButton.setEnabled(source.getSelectedIndex() != -1);
+                        flashcardCollection = new FlashcardCollection(database, source.getSelectedValue().toString());
                     }
                 }
             }
@@ -121,6 +157,11 @@ public class GUI {
 
                     if (!source.getValueIsAdjusting()) {
                         level = (int) source.getValue();
+                        testIterator = new TestIterator(flashcardCollection);
+                        flashcardCollection.createIterator(testIterator);
+                        flashcard = getNewFlashcard(level, false);
+                        sessionPanel.repaint();
+                        sessionPanel.revalidate();
                     }
                 }
             }
@@ -171,38 +212,6 @@ public class GUI {
 
             startPanel.add(startButton);
 
-            //--------------------------------------------------------------------------------
-            //Session panel
-            Flashcard flashcard = new Level3Flashcard(flashcardCollection.getIterator().getNext(true));
-
-            sessionPanel.setLayout(new GridBagLayout());
-
-            GridBagConstraints flashcardConstraint = new GridBagConstraints();
-            GridBagConstraints progressBarConstraint = new GridBagConstraints();
-            flashcardConstraint.weighty = 0.5;
-            flashcardConstraint.weightx = 0.5;
-            progressBarConstraint.weightx = 0.5;
-            progressBarConstraint.weighty = 0.5;
-            //Info about the flashcard Panel
-            //Answers Panel
-            JPanel flashcardPanel = flashcard.getFlashcardPanel();
-            flashcardConstraint.anchor = GridBagConstraints.CENTER;
-            flashcardConstraint.gridy = 2;
-            flashcardConstraint.gridx = 0;
-            sessionPanel.add(flashcardPanel, flashcardConstraint);
-
-            JProgressBar progressBar = new JProgressBar();
-            progressBar.setMinimum(0);
-            progressBar.setMaximum(flashcardCollection.getFlashcardAmount());
-            progressBar.setValue(0);
-            progressBarConstraint.fill = GridBagConstraints.HORIZONTAL;
-            progressBarConstraint.anchor = GridBagConstraints.PAGE_END;
-            progressBarConstraint.gridy = 2;
-            progressBarConstraint.gridx = 0;
-            progressBarConstraint.gridwidth = 3;
-            sessionPanel.add(progressBar, progressBarConstraint);
-
-            //----------------------------------------------------------------------------------------
             mainPanel.add(startPanel);
             return mainPanel;
 
@@ -225,6 +234,24 @@ public class GUI {
 
             panel.add(flashcardPanel);
             return panel;
+        }
+
+        protected Flashcard getNewFlashcard(int lvl, boolean isAnswerCorrect)
+        {
+            switch (lvl)
+            {
+                case 1:
+                    return new Level1Flashcard(flashcardCollection.getIterator().getNext(isAnswerCorrect));
+                case 2:
+                    return new Level2Flashcard(flashcardCollection.getIterator().getNext(isAnswerCorrect));
+                case 3:
+                    return new Level3Flashcard(flashcardCollection.getIterator().getNext(isAnswerCorrect));
+                case 4:
+                    return new Level4Flashcard(flashcardCollection.getIterator().getNext(isAnswerCorrect));
+                default:
+                    break;
+            }
+            return null;
         }
 
         protected JPanel makeDataPanel() {
