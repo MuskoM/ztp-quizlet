@@ -22,6 +22,7 @@ public class GUI {
         private int level = 1;
         private int flashcardAmount = 10;
         private Flashcard flashcard;
+        private JPanel flashcardPanel;
 
         public TabbedPane(Database database) {
             super(new GridLayout(1, 1));
@@ -85,7 +86,7 @@ public class GUI {
             progressBarConstraint.weighty = 0.5;
             //Info about the flashcard Panel
             //Answers Panel
-            JPanel flashcardPanel = flashcard.getFlashcardPanel();
+            flashcardPanel = flashcard.getFlashcardPanel();
             flashcardConstraint.anchor = GridBagConstraints.CENTER;
             flashcardConstraint.gridy = 2;
             flashcardConstraint.gridx = 0;
@@ -160,6 +161,7 @@ public class GUI {
                         testIterator = new TestIterator(flashcardCollection);
                         flashcardCollection.createIterator(testIterator);
                         flashcard = getNewFlashcard(level, false);
+                        flashcardPanel = flashcard.getFlashcardPanel();
                         sessionPanel.repaint();
                         sessionPanel.revalidate();
                     }
@@ -209,10 +211,9 @@ public class GUI {
                 }
             }
             startButton.addActionListener(new StartButtonListener());
-
             startPanel.add(startButton);
-
             mainPanel.add(startPanel);
+
             return mainPanel;
 
         }
@@ -224,15 +225,42 @@ public class GUI {
 
             //Main panel
             JPanel panel = new JPanel();
-            Flashcard flashcard = new Level2Flashcard(flashcardCollection.getIterator().getNext(true));
+            this.flashcard = getNewFlashcard(level, true);
+
+//            while(flashcardCollection.getIterator().hasNext(flashcard.isAnswerCorrect()))
+//            {
+//
+//            }
 
 //            panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
             panel.setLayout(new GridBagLayout());
             //Info about the flashcard Panel
             //Answers Panel
-            JPanel flashcardPanel = flashcard.getFlashcardPanel();
+            this.flashcardPanel = flashcard.getFlashcardPanel();
+
+            JButton applyButton = new JButton("Apply");
+            applyButton.setActionCommand("apply");
+
+            class ApplyButtonListener implements ActionListener
+            {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if ("apply".equals(e.getActionCommand()))
+                    {
+                        flashcard = new Level1Flashcard(flashcardCollection.getIterator().getNext(flashcard.isAnswerCorrect()));
+                        flashcardPanel = flashcard.getFlashcardPanel();
+                        panel.removeAll();
+                        panel.add(flashcardPanel);
+                        panel.add(applyButton);
+                        panel.revalidate();
+                        panel.repaint();
+                    }
+                }
+            }
+            applyButton.addActionListener(new ApplyButtonListener());
 
             panel.add(flashcardPanel);
+            panel.add(applyButton);
             return panel;
         }
 
