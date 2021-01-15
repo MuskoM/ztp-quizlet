@@ -108,32 +108,36 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
         answerA.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("A");
                 setAnswer("A");
+                userAnswer.setText(answer);
+                setAnswered(true);
             }
         });
 
         answerB.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("B");
                 setAnswer("B");
+                userAnswer.setText(answer);
+                setAnswered(true);
             }
         });
 
         answerC.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("C");
                 setAnswer("C");
+                userAnswer.setText(answer);
+                setAnswered(true);
             }
         });
 
         answerD.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("D");
                 setAnswer("D");
+                userAnswer.setText(answer);
+                setAnswered(true);
             }
         });
 
@@ -171,6 +175,6 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
         }
 
         super.setAnswer(converted_answer);
+        isAnswerCorrect = summarizeAnswer() == 1.0f;
     }
-
 }

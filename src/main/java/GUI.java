@@ -19,7 +19,7 @@ public class GUI {
         private FlashcardCollection flashcardCollection;
         private FlashcardIterator testIterator;
         private JList<String> collNamesList;
-        private int level = 1;
+        private int level = 4;
         private int flashcardAmount = 10;
         private Flashcard flashcard;
         private JPanel flashcardPanel;
@@ -172,7 +172,7 @@ public class GUI {
             startPanel.add(levelSlider);
 
             //Flashcard amount slider
-            JLabel amountSliderLabel = new JLabel("Choose how much words you want to test:");
+            JLabel amountSliderLabel = new JLabel("Choose how many words you want to test:");
             startPanel.add(amountSliderLabel);
 
             JSlider amountSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 10);
@@ -247,7 +247,7 @@ public class GUI {
                 public void actionPerformed(ActionEvent e) {
                     if ("apply".equals(e.getActionCommand()))
                     {
-                        flashcard = new Level1Flashcard(flashcardCollection.getIterator().getNext(flashcard.isAnswerCorrect()));
+                        flashcard = new Level4Flashcard(flashcardCollection.getIterator().getNext(flashcard.isAnswerCorrect()));
                         flashcardPanel = flashcard.getFlashcardPanel();
                         panel.removeAll();
                         panel.add(flashcardPanel);

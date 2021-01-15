@@ -82,8 +82,8 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
         answerA.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("A");
                 setAnswer("A");
+                userAnswer.setText(answer);
                 setAnswered(true);
             }
         });
@@ -91,8 +91,8 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
         answerB.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("B");
                 setAnswer("B");
+                userAnswer.setText(answer);
                 setAnswered(true);
             }
         });
@@ -106,8 +106,6 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
         flashcardPanel.add(userAnswer);
 
         System.out.println("Level 1");
-
-
 
         return flashcardPanel;
     }
@@ -127,7 +125,6 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
         }
 
         super.setAnswer(converted_answer);
-        summarizeAnswer();
         isAnswerCorrect = summarizeAnswer() == 1.0f;
     }
 

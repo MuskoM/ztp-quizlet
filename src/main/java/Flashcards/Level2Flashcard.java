@@ -73,28 +73,31 @@ public class Level2Flashcard extends FlashcardBaseDecorator{
 
         JButton answerA = new JButton("A. " + answers[0]);
         JButton answerB = new JButton("B. " + answers[1]);
-        JButton answerC = new JButton("B. " + answers[2]);
+        JButton answerC = new JButton("C. " + answers[2]);
         answerA.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("A");
                 setAnswer("A");
+                userAnswer.setText(answer);
+                setAnswered(true);
             }
         });
 
         answerB.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("B");
                 setAnswer("B");
+                userAnswer.setText(answer);
+                setAnswered(true);
             }
         });
 
-        answerB.addActionListener(new ActionListener() {
+        answerC.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userAnswer.setText("C");
                 setAnswer("C");
+                userAnswer.setText(answer);
+                setAnswered(true);
             }
         });
 
@@ -102,12 +105,12 @@ public class Level2Flashcard extends FlashcardBaseDecorator{
         flashcardPanel.add(flashcardLanguageLabel);
         flashcardPanel.add(flashcardTranslatedLabel);
         buttonsPanel.add(answerA);
-        buttonsPanel.add(answerC);
         buttonsPanel.add(answerB);
+        buttonsPanel.add(answerC);
         flashcardPanel.add(buttonsPanel);
         flashcardPanel.add(userAnswer);
 
-        System.out.println("Level 1");
+        System.out.println("Level 2");
 
         return flashcardPanel;
     }
@@ -132,5 +135,6 @@ public class Level2Flashcard extends FlashcardBaseDecorator{
         }
 
         super.setAnswer(converted_answer);
+        isAnswerCorrect = summarizeAnswer() == 1.0f;
     }
 }

@@ -73,6 +73,7 @@ public class Level4Flashcard extends FlashcardBaseDecorator{
         });
 
         JButton answerA = new JButton("Submit answer");
+        answerA.setActionCommand("apply");
 
         answerA.addActionListener(new ActionListener() {
             @Override
@@ -80,7 +81,6 @@ public class Level4Flashcard extends FlashcardBaseDecorator{
                 setAnswer(userAnswer.getText());
             }
         });
-
 
         flashcardPanel.add(levelLabel);
         flashcardPanel.add(flashcardLanguageLabel);
@@ -95,4 +95,9 @@ public class Level4Flashcard extends FlashcardBaseDecorator{
         return flashcardPanel;
     }
 
+    public void proceed()
+    {
+        setAnswered(true);
+        isAnswerCorrect = summarizeAnswer() == 1.0f;
+    }
 }
