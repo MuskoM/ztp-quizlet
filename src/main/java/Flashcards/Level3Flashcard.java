@@ -85,7 +85,6 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
         }
     }
 
-
     @Override
     public JPanel getFlashcardPanel() {
         randomizeAnswers();
@@ -95,7 +94,7 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
         JPanel buttonsPanel = new JPanel();
         flashcardPanel.setBackground(type.getColor());
         JLabel flashcardTranslatedLabel = new JLabel(this.translatedWord);
-        JLabel levelLabel = new JLabel("Level 2");
+        JLabel levelLabel = new JLabel("Level 3");
         JLabel flashcardLanguageLabel = new JLabel(this.languageWord);
         JLabel userAnswer = new JLabel("");
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.LINE_AXIS));
@@ -177,6 +176,6 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
         super.setAnswer(converted_answer);
         float pts = summarizeAnswer();
         isAnswerCorrect = pts == 1.0f;
-        points = pts;
+        wrapee.setPoints(pts);
     }
 }

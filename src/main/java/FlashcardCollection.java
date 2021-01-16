@@ -13,18 +13,16 @@ public class FlashcardCollection {
 
     private List<Flashcard> flashcards;
     private FlashcardIterator iterator;
-    private float[] points;
     private float pointsSum;
-    private int flashcardAmount = 0;
 
-    public FlashcardCollection(Database database, String collectionName)
+    public FlashcardCollection(Database database, String collectionName, int flashcardAmount)
     {
 
         MongoCollection<Document> collection = database.getCollection(collectionName);
         FindIterable<Document> iterable;
         flashcards = new ArrayList<>();
         List<String> options = database.getOptionWords("languageWord");
-        iterable = collection.find(new Document());
+        iterable = collection.find(new Document()).limit(flashcardAmount);
         iterable.forEach(document -> flashcards.add(new Flashcard(document.get("languageWord").toString(),
                 document.get("translatedWord").toString(), options)));
     }
@@ -47,16 +45,11 @@ public class FlashcardCollection {
         return iterator;
     }
 
-    public void setPointsForOneWord(int indx, float point)
+    public float finalizeSummary()
     {
-        points[indx] = point;
-    }
-
-    public void finalizeSummary()
-    {
-        for (float point : points) {
-            pointsSum += point;
-        }
-        System.out.println("You got " + pointsSum + " points. Congratulations!");
+        flashcards.forEach(flashcard -> {
+            pointsSum += flashcard.getPoints();
+        });
+        return pointsSum;
     }
 }

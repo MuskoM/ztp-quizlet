@@ -19,7 +19,7 @@ public class Level4Flashcard extends FlashcardBaseDecorator{
     public Level4Flashcard(Flashcard wrapee) {
         super(wrapee);
         type = FlashcardFactory.createFlashcardType("3",3, Color.RED,1,1);
-        wrapee.summContext.setSummaryStrategy(new DifficultSummary());
+        summContext.setSummaryStrategy(new DifficultSummary());
     }
 
     @Override
@@ -100,6 +100,6 @@ public class Level4Flashcard extends FlashcardBaseDecorator{
         setAnswered(true);
         float pts = summarizeAnswer();
         isAnswerCorrect = pts == 1.0f;
-        points = pts;
+        wrapee.setPoints(pts);
     }
 }

@@ -10,6 +10,7 @@ public class FlashcardBaseDecorator extends Flashcard {
         this.translatedWord = wrapee.translatedWord;
         this.options = wrapee.options;
         this.type = wrapee.type;
+        this.points = wrapee.points;
     }
 
 }

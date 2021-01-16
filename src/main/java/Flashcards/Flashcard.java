@@ -21,6 +21,10 @@ public class Flashcard {
         return points;
     }
 
+    public void setPoints(float points) {
+        this.points = points;
+    }
+
     protected float points;
 
     public Flashcard() {
@@ -107,4 +111,6 @@ public class Flashcard {
         return  languageWord + ":"
                 + translatedWord;
     }
+
+    public void proceed() {};
 }
