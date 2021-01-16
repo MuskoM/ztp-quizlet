@@ -15,7 +15,7 @@ public class Level3Flashcard extends FlashcardBaseDecorator{
 
     public Level3Flashcard(Flashcard wrapee) {
         super(wrapee);
-        type = FlashcardFactory.createFlashcardType("type2",2, Color.ORANGE,10,10);
+        type = FlashcardFactory.createFlashcardType("type3",3, Color.ORANGE,10,10);
         for (int i = 0; i < this.options.size(); i++){
             randomized_option.add(i);
         }

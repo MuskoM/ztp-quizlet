@@ -14,25 +14,36 @@ import java.util.List;
 public class GUI {
 
     static class TabbedPane extends JPanel {
+        public static final String LEARNING_SESSION_LABEL = "Learning Session";
+        public static final String TEST_SESSION_LABEL = "Test Session";
 
         private Database database;
+        private FlashcardCollection learningFlashcardCollection;
+        private FlashcardCollection testingFlashcardCollection;
         private FlashcardCollection flashcardCollection;
         private FlashcardIterator testIterator;
+        private FlashcardIterator learningIterator;
 
         private JList<String> collNamesList;
-        private int level = 1;
+        private int testSessionLevel = 1;
+        private int learningSessionLevel = 1;
         private int flashcardAmount = 10;
-        private String selectedCollectionName;
+        private String selectedCollectionNameTest;
+        private String selectedCollectionNameLearning;
 
-        private Flashcard flashcard;
-        private JPanel flashcardPanel;
+        private Flashcard testingFlashcard;
+        private Flashcard learningFlashcard;
+        private JPanel flashcardTestPanel;
+        private JPanel flashcardLearningPanel;
         private JPanel mainTestSessionPanel;
+        private JPanel mainLearningSessionPanel;
         private float points;
 
         public TabbedPane(Database database) {
             super(new GridLayout(1, 1));
             this.database = database;
-            flashcardCollection = new FlashcardCollection(database, "pol-eng");
+
+            this.flashcardCollection = new FlashcardCollection(database, "pol-eng");
 
             JTabbedPane tabbedPane = new JTabbedPane();
             ImageIcon learningTabIcon = createImageIcon("icons/dices.png");
@@ -62,21 +73,25 @@ public class GUI {
         }
 
         protected JPanel makeTestSessionPanel(String text) {
-
-            //TODO: Losowanie fiszek dla danej sesji z podanego zakresu i wybór trudności
-
             //Main panel
             mainTestSessionPanel = new JPanel();
 
             mainTestSessionPanel.setLayout(new GridBagLayout());
 
             //Subpanels - for starting session and for session itself
-            JPanel startPanel = makeStartPanel();
+            JPanel startPanel = makeStartPanel(TEST_SESSION_LABEL);
 
             //--------------------------------------------------------------------------------
             //Starting session panel
 
-            mainTestSessionPanel.add(startPanel);
+            GridBagConstraints panelConstraint = new GridBagConstraints();
+            panelConstraint.weightx = 0.5;
+            panelConstraint.weighty = 0.5;
+            panelConstraint.anchor = GridBagConstraints.CENTER;
+            panelConstraint.gridx = 1;
+            panelConstraint.gridy = 1;
+
+            mainTestSessionPanel.add(startPanel, panelConstraint);
 
             //Start session button
             JButton startButton = new JButton();
@@ -90,26 +105,32 @@ public class GUI {
                         mainTestSessionPanel.removeAll();
                         mainTestSessionPanel.revalidate();
                         mainTestSessionPanel.repaint();
-                        mainTestSessionPanel.add(makeSessionPanel());
+                        mainTestSessionPanel.add(makeSessionPanel(TEST_SESSION_LABEL));
                     }
                 }
             }
             startButton.addActionListener(new StartButtonListener());
-            mainTestSessionPanel.add(startButton);
+            GridBagConstraints buttonConstraint = new GridBagConstraints();
+            buttonConstraint.weightx = 0.5;
+            buttonConstraint.weighty = 0.5;
+//            buttonConstraint.fill = GridBagConstraints.HORIZONTAL;
+            buttonConstraint.anchor = GridBagConstraints.CENTER;
+            buttonConstraint.gridy = 3;
+            buttonConstraint.gridx = 0;
+            buttonConstraint.gridwidth = 2;
+            mainTestSessionPanel.add(startButton, buttonConstraint);
 
             return mainTestSessionPanel;
-
         }
 
-        protected JPanel makeStartPanel()
-        {
+        protected JPanel makeStartPanel(String sessionType) {
             JPanel startPanel = new JPanel();
             startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.PAGE_AXIS));
             JButton startButton = new JButton(); //it's just here for the dicList and event listener
 
             //Label
             JLabel label = new JLabel();
-            label.setText("Configure your test session");
+            label.setText("Configure your " + sessionType);
             label.setHorizontalAlignment(JLabel.CENTER);
             startPanel.add(label);
 
@@ -127,7 +148,11 @@ public class GUI {
                     JList source = (JList) e.getSource();
                     if (!e.getValueIsAdjusting()) {
                         startButton.setEnabled(source.getSelectedIndex() != -1);
-                        selectedCollectionName = source.getSelectedValue().toString();
+                        if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                            selectedCollectionNameLearning = source.getSelectedValue().toString();
+                        } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                            selectedCollectionNameTest = source.getSelectedValue().toString();
+                        }
                     }
                 }
             }
@@ -153,7 +178,11 @@ public class GUI {
                 public void stateChanged(ChangeEvent e) {
                     JSlider source = (JSlider) e.getSource();
                     if (!source.getValueIsAdjusting()) {
-                        level = (int) source.getValue();
+                        if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                            learningSessionLevel = (int) source.getValue();
+                        } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                            testSessionLevel = (int) source.getValue();
+                        }
 //                        sessionPanel.repaint();
 //                        sessionPanel.revalidate();
                     }
@@ -190,18 +219,26 @@ public class GUI {
             return startPanel;
         }
 
-        protected JPanel makeSessionPanel()
-        {
+        protected JPanel makeSessionPanel(String sessionType) {
             //--------------------------------------------------------------------------------
             //Session panel
             JPanel sessionPanel = new JPanel();
 
-            flashcardCollection = new FlashcardCollection(database, selectedCollectionName);
+            if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                learningFlashcardCollection = new FlashcardCollection(database, selectedCollectionNameLearning);
+                learningIterator = new LearningIterator(learningFlashcardCollection);
+                learningFlashcardCollection.createIterator(learningIterator);
+            } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                testingFlashcardCollection = new FlashcardCollection(database, selectedCollectionNameTest);
+                testIterator = new TestIterator(testingFlashcardCollection);
+                testingFlashcardCollection.createIterator(testIterator);
+            }
 
-            testIterator = new TestIterator(flashcardCollection);
-            flashcardCollection.createIterator(testIterator);
-
-            flashcard = getNewFlashcard(level, true);
+            if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                learningFlashcard = getNewFlashcard(learningSessionLevel, true, sessionType);
+            } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                testingFlashcard = getNewFlashcard(testSessionLevel, true, sessionType);;
+            }
 
             sessionPanel.setLayout(new GridBagLayout());
 
@@ -213,15 +250,59 @@ public class GUI {
             progressBarConstraint.weighty = 0.5;
             //Info about the flashcard Panel
             //Answers Panel
-            flashcardPanel = flashcard.getFlashcardPanel();
             flashcardConstraint.anchor = GridBagConstraints.CENTER;
             flashcardConstraint.gridy = 2;
             flashcardConstraint.gridx = 0;
-            sessionPanel.add(flashcardPanel, flashcardConstraint);
+
+            if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                flashcardLearningPanel = learningFlashcard.getFlashcardPanel();
+                sessionPanel.add(flashcardLearningPanel, flashcardConstraint);
+            } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                flashcardTestPanel = testingFlashcard.getFlashcardPanel();
+                sessionPanel.add(flashcardTestPanel, flashcardConstraint);
+            }
+
+            JButton applyButton = new JButton("Apply");
+            applyButton.setActionCommand("apply");
+            GridBagConstraints buttonConstraint = new GridBagConstraints();
+            buttonConstraint.weighty = 0.5;
+            buttonConstraint.weightx = 0.5;
+            buttonConstraint.gridy = 3;
+            buttonConstraint.gridx = 0;
+            buttonConstraint.anchor = GridBagConstraints.CENTER;
+
+            class ApplyButtonListener implements ActionListener {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if ("apply".equals(e.getActionCommand())) {
+//                        points += flashcard.getPoints();
+//                        System.out.println(points);
+                        sessionPanel.removeAll();
+                        if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                            learningFlashcard = getNewFlashcard(learningSessionLevel, learningFlashcard.isAnswerCorrect(), sessionType);
+                            flashcardLearningPanel = learningFlashcard.getFlashcardPanel();
+                            sessionPanel.add(flashcardLearningPanel, flashcardConstraint);
+                        } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                            testingFlashcard = getNewFlashcard(testSessionLevel, testingFlashcard.isAnswerCorrect(), sessionType);
+                            flashcardTestPanel = testingFlashcard.getFlashcardPanel();
+                            sessionPanel.add(flashcardTestPanel, flashcardConstraint);
+                        }
+                        sessionPanel.add(applyButton, buttonConstraint);
+                        sessionPanel.revalidate();
+                        sessionPanel.repaint();
+                    }
+                }
+            }
+            applyButton.addActionListener(new ApplyButtonListener());
+            sessionPanel.add(applyButton, buttonConstraint);
 
             JProgressBar progressBar = new JProgressBar();
             progressBar.setMinimum(0);
-            progressBar.setMaximum(flashcardCollection.getFlashcardAmount());
+            if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                progressBar.setMaximum(learningFlashcardCollection.getFlashcardAmount());
+            } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                progressBar.setMaximum(testingFlashcardCollection.getFlashcardAmount());
+            }
             progressBar.setValue(0);
             progressBarConstraint.fill = GridBagConstraints.HORIZONTAL;
             progressBarConstraint.anchor = GridBagConstraints.PAGE_END;
@@ -235,67 +316,83 @@ public class GUI {
         }
 
         protected JPanel makeLearningSessionPanel(String text) {
-            //TODO: Losowanie fiszek dla danej sesji z podanego zakresu i wybór trudności
-            FlashcardIterator learningIterator = new LearningIterator(flashcardCollection);
-            flashcardCollection.createIterator(learningIterator);
-
             //Main panel
-            JPanel panel = new JPanel();
-            this.flashcard = getNewFlashcard(level, true);
+            mainLearningSessionPanel = new JPanel();
 
-//            while(flashcardCollection.getIterator().hasNext(flashcard.isAnswerCorrect()))
-//            {
-//
-//            }
+            mainLearningSessionPanel.setLayout(new GridBagLayout());
 
-//            panel.setLayout(new BoxLayout(panel,BoxLayout.LINE_AXIS));
-            panel.setLayout(new GridBagLayout());
-            //Info about the flashcard Panel
-            //Answers Panel
-            this.flashcardPanel = flashcard.getFlashcardPanel();
+            //Subpanels - for starting session and for session itself
+            JPanel startPanel = makeStartPanel(LEARNING_SESSION_LABEL);
 
-            JButton applyButton = new JButton("Apply");
-            applyButton.setActionCommand("apply");
+            //--------------------------------------------------------------------------------
+            //Starting session panel
 
-            class ApplyButtonListener implements ActionListener
-            {
+            GridBagConstraints panelConstraint = new GridBagConstraints();
+            panelConstraint.weightx = 0.5;
+            panelConstraint.weighty = 0.5;
+            panelConstraint.anchor = GridBagConstraints.CENTER;
+            panelConstraint.gridx = 1;
+            panelConstraint.gridy = 1;
+
+            mainLearningSessionPanel.add(startPanel, panelConstraint);
+
+            //Start session button
+            JButton startButton = new JButton();
+            startButton.setText("Start test session");
+            startButton.setActionCommand("start-session");
+
+            class StartButtonListener implements ActionListener {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if ("apply".equals(e.getActionCommand()))
-                    {
-//                        points += flashcard.getPoints();
-//                        System.out.println(points);
-                        flashcard = new Level1Flashcard(flashcardCollection.getIterator().getNext(flashcard.isAnswerCorrect()));
-                        flashcardPanel = flashcard.getFlashcardPanel();
-                        panel.removeAll();
-                        panel.add(flashcardPanel);
-                        panel.add(applyButton);
-                        panel.revalidate();
-                        panel.repaint();
+                    if ("start-session".equals(e.getActionCommand())) {
+                        mainLearningSessionPanel.removeAll();
+                        mainLearningSessionPanel.revalidate();
+                        mainLearningSessionPanel.repaint();
+                        mainLearningSessionPanel.add(makeSessionPanel(LEARNING_SESSION_LABEL));
                     }
                 }
             }
-            applyButton.addActionListener(new ApplyButtonListener());
+            startButton.addActionListener(new StartButtonListener());
+            GridBagConstraints buttonConstraint = new GridBagConstraints();
+            buttonConstraint.weightx = 0.5;
+            buttonConstraint.weighty = 0.5;
+//            buttonConstraint.fill = GridBagConstraints.HORIZONTAL;
+            buttonConstraint.anchor = GridBagConstraints.CENTER;
+            buttonConstraint.gridy = 3;
+            buttonConstraint.gridx = 0;
+            buttonConstraint.gridwidth = 2;
+            mainLearningSessionPanel.add(startButton, buttonConstraint);
 
-            panel.add(flashcardPanel);
-            panel.add(applyButton);
-            return panel;
+            return mainLearningSessionPanel;
         }
 
-        protected Flashcard getNewFlashcard(int lvl, boolean isAnswerCorrect)
-        {
-            switch (lvl)
-            {
-                case 1:
-                    return new Level1Flashcard(flashcardCollection.getIterator().getNext(isAnswerCorrect));
-                case 2:
-                    return new Level2Flashcard(flashcardCollection.getIterator().getNext(isAnswerCorrect));
-                case 3:
-                    return new Level3Flashcard(flashcardCollection.getIterator().getNext(isAnswerCorrect));
-                case 4:
-                    return new Level4Flashcard(flashcardCollection.getIterator().getNext(isAnswerCorrect));
-                default:
-                    break;
+        protected Flashcard getNewFlashcard(int lvl, boolean isAnswerCorrect, String sessionType) {
+            if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                switch (lvl) {
+                    case 1:
+                        return new Level1Flashcard(learningFlashcardCollection.getIterator().getNext(isAnswerCorrect));
+                    case 2:
+                        return new Level2Flashcard(learningFlashcardCollection.getIterator().getNext(isAnswerCorrect));
+                    case 3:
+                        return new Level3Flashcard(learningFlashcardCollection.getIterator().getNext(isAnswerCorrect));
+                    case 4:
+                        return new Level4Flashcard(learningFlashcardCollection.getIterator().getNext(isAnswerCorrect));
+                    default:
+                        break;
+                }
+            } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                switch (lvl) {
+                    case 1:
+                        return new Level1Flashcard(testingFlashcardCollection.getIterator().getNext(isAnswerCorrect));
+                    case 2:
+                        return new Level2Flashcard(testingFlashcardCollection.getIterator().getNext(isAnswerCorrect));
+                    case 3:
+                        return new Level3Flashcard(testingFlashcardCollection.getIterator().getNext(isAnswerCorrect));
+                    case 4:
+                        return new Level4Flashcard(testingFlashcardCollection.getIterator().getNext(isAnswerCorrect));
+                    default:
+                        break;
+                }
             }
             return null;
         }
@@ -303,7 +400,6 @@ public class GUI {
         protected JPanel makeDataPanel() {
             return new JPanel();
         }
-
 
         protected JPanel makeDatabaseMgmntPanel() {
             JPanel panel = new JPanel();
