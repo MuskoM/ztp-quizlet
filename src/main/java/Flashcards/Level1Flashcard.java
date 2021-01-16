@@ -125,7 +125,9 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
         }
 
         super.setAnswer(converted_answer);
-        isAnswerCorrect = summarizeAnswer() == 1.0f;
+        float pts = summarizeAnswer();
+        isAnswerCorrect = pts == 1.0f;
+        points = pts;
     }
 
 }

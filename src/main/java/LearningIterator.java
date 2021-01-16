@@ -3,11 +3,11 @@ import Flashcards.Flashcard;
 public class LearningIterator implements FlashcardIterator {
     private FlashcardCollection collection;
     private Flashcard iterationState;
-    private int indx = 0;
+    private int indx = -1;
 
     public LearningIterator(FlashcardCollection collection) {
         this.collection = collection;
-        this.iterationState = collection.getFlashcards().get(indx);
+        this.iterationState = collection.getFlashcards().get(indx+1);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class FlashcardTests {
                     word.get("translatedWord").toString()));
         });
 
-        assertEquals(wordsList.get(0).get("languageWord").toString(),flashcardList.get(0).getBaseWord());
+        assertEquals(wordsList.get(0).get("languageWord").toString(),flashcardList.get(0).getLanguageWord());
     }
 
 }

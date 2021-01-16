@@ -18,11 +18,16 @@ public class GUI {
         private Database database;
         private FlashcardCollection flashcardCollection;
         private FlashcardIterator testIterator;
+
         private JList<String> collNamesList;
-        private int level = 4;
+        private int level = 1;
         private int flashcardAmount = 10;
+        private String selectedCollectionName;
+
         private Flashcard flashcard;
         private JPanel flashcardPanel;
+        private JPanel mainTestSessionPanel;
+        private float points;
 
         public TabbedPane(Database database) {
             super(new GridLayout(1, 1));
@@ -61,15 +66,137 @@ public class GUI {
             //TODO: Losowanie fiszek dla danej sesji z podanego zakresu i wybór trudności
 
             //Main panel
-            JPanel mainPanel = new JPanel();
-            mainPanel.setLayout(new GridBagLayout());
+            mainTestSessionPanel = new JPanel();
+
+            mainTestSessionPanel.setLayout(new GridBagLayout());
 
             //Subpanels - for starting session and for session itself
-            JPanel startPanel = new JPanel();
-            JPanel sessionPanel = new JPanel();
+            JPanel startPanel = makeStartPanel();
 
             //--------------------------------------------------------------------------------
+            //Starting session panel
+
+            mainTestSessionPanel.add(startPanel);
+
+            //Start session button
+            JButton startButton = new JButton();
+            startButton.setText("Start test session");
+            startButton.setActionCommand("start-session");
+
+            class StartButtonListener implements ActionListener {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if ("start-session".equals(e.getActionCommand())) {
+                        mainTestSessionPanel.removeAll();
+                        mainTestSessionPanel.revalidate();
+                        mainTestSessionPanel.repaint();
+                        mainTestSessionPanel.add(makeSessionPanel());
+                    }
+                }
+            }
+            startButton.addActionListener(new StartButtonListener());
+            mainTestSessionPanel.add(startButton);
+
+            return mainTestSessionPanel;
+
+        }
+
+        protected JPanel makeStartPanel()
+        {
+            JPanel startPanel = new JPanel();
+            startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.PAGE_AXIS));
+            JButton startButton = new JButton(); //it's just here for the dicList and event listener
+
+            //Label
+            JLabel label = new JLabel();
+            label.setText("Configure your test session");
+            label.setHorizontalAlignment(JLabel.CENTER);
+            startPanel.add(label);
+
+            //Dictionary
+            JLabel dictionaryListLabel = new JLabel("Choose dictionary:", JLabel.CENTER);
+            startPanel.add(dictionaryListLabel);
+
+            JList dictionaryList = new JList(database.getCollectionsNames().toArray(new String[0]));
+            dictionaryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            dictionaryList.setLayoutOrientation(JList.VERTICAL);
+            dictionaryList.setVisibleRowCount(-1);
+
+            class DictionaryListListener implements ListSelectionListener {
+                public void valueChanged(ListSelectionEvent e) {
+                    JList source = (JList) e.getSource();
+                    if (!e.getValueIsAdjusting()) {
+                        startButton.setEnabled(source.getSelectedIndex() != -1);
+                        selectedCollectionName = source.getSelectedValue().toString();
+                    }
+                }
+            }
+            dictionaryList.addListSelectionListener(new DictionaryListListener());
+
+            JScrollPane dictionaryListScroller = new JScrollPane(dictionaryList);
+            dictionaryListScroller.setPreferredSize(new Dimension(100, 150));
+
+            startPanel.add(dictionaryListScroller);
+
+            //Level slider
+            JLabel levelSliderLabel = new JLabel("Choose your level:", JLabel.CENTER);
+            startPanel.add(levelSliderLabel);
+
+            JSlider levelSlider = new JSlider(JSlider.HORIZONTAL, 1, 4, 1);
+            levelSlider.setMajorTickSpacing(1);
+            levelSlider.setMinorTickSpacing(1);
+            levelSlider.setPaintTicks(true);
+            levelSlider.setPaintLabels(true);
+            levelSlider.setToolTipText("Level");
+
+            class LevelSliderListener implements ChangeListener {
+                public void stateChanged(ChangeEvent e) {
+                    JSlider source = (JSlider) e.getSource();
+                    if (!source.getValueIsAdjusting()) {
+                        level = (int) source.getValue();
+//                        sessionPanel.repaint();
+//                        sessionPanel.revalidate();
+                    }
+                }
+            }
+            levelSlider.addChangeListener(new LevelSliderListener());
+
+            startPanel.add(levelSlider);
+
+            //Flashcard amount slider
+            JLabel amountSliderLabel = new JLabel("Choose how many words you want to test:");
+            startPanel.add(amountSliderLabel);
+
+            JSlider amountSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 10);
+            amountSlider.setMajorTickSpacing(5);
+            amountSlider.setMinorTickSpacing(1);
+            amountSlider.setPaintTicks(true);
+            amountSlider.setPaintLabels(true);
+            amountSlider.setToolTipText("Flashcard amount");
+
+            class FlashcardAmountSliderListener implements ChangeListener {
+                public void stateChanged(ChangeEvent e) {
+                    JSlider source = (JSlider) e.getSource();
+
+                    if (!source.getValueIsAdjusting()) {
+                        flashcardAmount = (int) source.getValue();
+                    }
+                }
+            }
+            amountSlider.addChangeListener(new FlashcardAmountSliderListener());
+
+            startPanel.add(amountSlider);
+
+            return startPanel;
+        }
+
+        protected JPanel makeSessionPanel()
+        {
+            //--------------------------------------------------------------------------------
             //Session panel
+            JPanel sessionPanel = new JPanel();
+
+            flashcardCollection = new FlashcardCollection(database, selectedCollectionName);
 
             testIterator = new TestIterator(flashcardCollection);
             flashcardCollection.createIterator(testIterator);
@@ -104,118 +231,7 @@ public class GUI {
             sessionPanel.add(progressBar, progressBarConstraint);
 
             //----------------------------------------------------------------------------------------
-
-            //--------------------------------------------------------------------------------
-            //Starting session panel
-            startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.PAGE_AXIS));
-            JButton startButton = new JButton(); //it's just here for the dicList and event listener
-
-            //Label
-            JLabel label = new JLabel();
-            label.setText("Configure your test session");
-            label.setHorizontalAlignment(JLabel.CENTER);
-            startPanel.add(label);
-
-            //Dictionary
-            JLabel dictionaryListLabel = new JLabel("Choose dictionary:", JLabel.CENTER);
-            startPanel.add(dictionaryListLabel);
-
-            JList dictionaryList = new JList(database.getCollectionsNames().toArray(new String[0]));
-            dictionaryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            dictionaryList.setLayoutOrientation(JList.VERTICAL);
-            dictionaryList.setVisibleRowCount(-1);
-
-            class DictionaryListListener implements ListSelectionListener {
-                public void valueChanged(ListSelectionEvent e) {
-                    JList source = (JList) e.getSource();
-                    if (!e.getValueIsAdjusting()) {
-                        startButton.setEnabled(source.getSelectedIndex() != -1);
-                        flashcardCollection = new FlashcardCollection(database, source.getSelectedValue().toString());
-                    }
-                }
-            }
-            dictionaryList.addListSelectionListener(new DictionaryListListener());
-
-            JScrollPane dictionaryListScroller = new JScrollPane(dictionaryList);
-            dictionaryListScroller.setPreferredSize(new Dimension(100, 150));
-
-            startPanel.add(dictionaryListScroller);
-
-            //Level slider
-            JLabel levelSliderLabel = new JLabel("Choose your level:", JLabel.CENTER);
-            startPanel.add(levelSliderLabel);
-
-            JSlider levelSlider = new JSlider(JSlider.HORIZONTAL, 1, 4, 1);
-            levelSlider.setMajorTickSpacing(1);
-            levelSlider.setMinorTickSpacing(1);
-            levelSlider.setPaintTicks(true);
-            levelSlider.setPaintLabels(true);
-            levelSlider.setToolTipText("Level");
-
-            class LevelSliderListener implements ChangeListener {
-                public void stateChanged(ChangeEvent e) {
-                    JSlider source = (JSlider) e.getSource();
-
-                    if (!source.getValueIsAdjusting()) {
-                        level = (int) source.getValue();
-                        testIterator = new TestIterator(flashcardCollection);
-                        flashcardCollection.createIterator(testIterator);
-                        flashcard = getNewFlashcard(level, false);
-                        flashcardPanel = flashcard.getFlashcardPanel();
-                        sessionPanel.repaint();
-                        sessionPanel.revalidate();
-                    }
-                }
-            }
-            levelSlider.addChangeListener(new LevelSliderListener());
-
-            startPanel.add(levelSlider);
-
-            //Flashcard amount slider
-            JLabel amountSliderLabel = new JLabel("Choose how many words you want to test:");
-            startPanel.add(amountSliderLabel);
-
-            JSlider amountSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 10);
-            amountSlider.setMajorTickSpacing(5);
-            amountSlider.setMinorTickSpacing(1);
-            amountSlider.setPaintTicks(true);
-            amountSlider.setPaintLabels(true);
-            amountSlider.setToolTipText("Flashcard amount");
-
-            class FlashcardAmountSliderListener implements ChangeListener {
-                public void stateChanged(ChangeEvent e) {
-                    JSlider source = (JSlider) e.getSource();
-
-                    if (!source.getValueIsAdjusting()) {
-                        flashcardAmount = (int) source.getValue();
-                    }
-                }
-            }
-            amountSlider.addChangeListener(new FlashcardAmountSliderListener());
-
-            startPanel.add(amountSlider);
-
-            //Start session button
-            startButton.setText("Start test session");
-            startButton.setActionCommand("start-session");
-
-            class StartButtonListener implements ActionListener {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if ("start-session".equals(e.getActionCommand())) {
-                        mainPanel.removeAll();
-                        mainPanel.revalidate();
-                        mainPanel.repaint();
-                        mainPanel.add(sessionPanel);
-                    }
-                }
-            }
-            startButton.addActionListener(new StartButtonListener());
-            startPanel.add(startButton);
-            mainPanel.add(startPanel);
-
-            return mainPanel;
-
+            return sessionPanel;
         }
 
         protected JPanel makeLearningSessionPanel(String text) {
@@ -247,7 +263,9 @@ public class GUI {
                 public void actionPerformed(ActionEvent e) {
                     if ("apply".equals(e.getActionCommand()))
                     {
-                        flashcard = new Level4Flashcard(flashcardCollection.getIterator().getNext(flashcard.isAnswerCorrect()));
+//                        points += flashcard.getPoints();
+//                        System.out.println(points);
+                        flashcard = new Level1Flashcard(flashcardCollection.getIterator().getNext(flashcard.isAnswerCorrect()));
                         flashcardPanel = flashcard.getFlashcardPanel();
                         panel.removeAll();
                         panel.add(flashcardPanel);

@@ -98,6 +98,8 @@ public class Level4Flashcard extends FlashcardBaseDecorator{
     public void proceed()
     {
         setAnswered(true);
-        isAnswerCorrect = summarizeAnswer() == 1.0f;
+        float pts = summarizeAnswer();
+        isAnswerCorrect = pts == 1.0f;
+        points = pts;
     }
 }

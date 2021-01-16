@@ -15,7 +15,7 @@ public class FlashcardCollection {
     private FlashcardIterator iterator;
     private float[] points;
     private float pointsSum;
-
+    private int flashcardAmount = 0;
 
     public FlashcardCollection(Database database, String collectionName)
     {

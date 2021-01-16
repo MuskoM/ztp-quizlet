@@ -17,6 +17,12 @@ public class Flashcard {
     protected Summarization summContext;
     protected List<String> options;
 
+    public float getPoints() {
+        return points;
+    }
+
+    protected float points;
+
     public Flashcard() {
         summContext = new Summarization();
     }
