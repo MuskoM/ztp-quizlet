@@ -21,7 +21,7 @@ public class FlashcardCollection {
         MongoCollection<Document> collection = database.getCollection(collectionName);
         FindIterable<Document> iterable;
         flashcards = new ArrayList<>();
-        List<String> options = database.getOptionWords("languageWord");
+        List<String> options = database.getOptionWords("languageWord",collectionName);
         iterable = collection.find(new Document()).limit(flashcardAmount);
         iterable.forEach(document -> flashcards.add(new Flashcard(document.get("languageWord").toString(),
                 document.get("translatedWord").toString(), options)));

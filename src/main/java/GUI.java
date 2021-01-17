@@ -19,6 +19,7 @@ public class GUI {
         public static final String TEST_SESSION_LABEL = "Test Session";
 
         private Database database;
+        private String[] collectionNames;
         private FlashcardCollection learningFlashcardCollection;
         private FlashcardCollection testingFlashcardCollection;
         private FlashcardCollection flashcardCollection;
@@ -57,6 +58,7 @@ public class GUI {
                     "Test your skills");
             tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
+
             JComponent panel2 = makeLearningSessionPanel("Panel #2");
             tabbedPane.addTab("Learning", learningTabIcon, panel2,
                     "Learn your language");
@@ -70,8 +72,6 @@ public class GUI {
             //Add the tabbed pane to this panel.
             add(tabbedPane);
 
-            //Uncomment the following line to use scrolling tabs.
-            //tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         }
 
         protected JPanel makeTestSessionPanel(String text) {
@@ -136,11 +136,40 @@ public class GUI {
             label.setHorizontalAlignment(JLabel.CENTER);
             startPanel.add(label);
 
+            JSlider amountSlider = new JSlider(JSlider.HORIZONTAL, 1, 50, 10);
+            JLabel amountSliderLabel = new JLabel("Choose how many words you want to test:");
+
+
+            amountSlider.setMajorTickSpacing(5);
+            amountSlider.setMinorTickSpacing(1);
+            amountSlider.setPaintTicks(true);
+            amountSlider.setPaintLabels(true);
+            amountSlider.setToolTipText("Flashcard amount");
+
+            class FlashcardAmountSliderListener implements ChangeListener {
+                public void stateChanged(ChangeEvent e) {
+                    JSlider source = (JSlider) e.getSource();
+
+                    if (!source.getValueIsAdjusting()) {
+                        if (sessionType.equals(LEARNING_SESSION_LABEL)) {
+                            learningFlashcardAmount = (int) source.getValue();
+                        } else if (sessionType.equals(TEST_SESSION_LABEL)) {
+                            testingFlashcardAmount = (int) source.getValue();
+                        }
+                    }
+                }
+            }
+
+            amountSlider.addChangeListener(new FlashcardAmountSliderListener());
+
             //Dictionary
             JLabel dictionaryListLabel = new JLabel("Choose dictionary:", JLabel.CENTER);
             startPanel.add(dictionaryListLabel);
 
-            JList dictionaryList = new JList(database.getCollectionsNames().toArray(new String[0]));
+            this.collectionNames = database.getCollectionsNames().toArray(new String[0]);
+
+            JList dictionaryList = new JList(this.collectionNames);
+            dictionaryList.setSelectedIndex(0);
             dictionaryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             dictionaryList.setLayoutOrientation(JList.VERTICAL);
             dictionaryList.setVisibleRowCount(-1);
@@ -152,8 +181,10 @@ public class GUI {
                         startButton.setEnabled(source.getSelectedIndex() != -1);
                         if (sessionType.equals(LEARNING_SESSION_LABEL)) {
                             selectedCollectionNameLearning = source.getSelectedValue().toString();
+                            amountSlider.setMaximum((int) database.size(selectedCollectionNameLearning));
                         } else if (sessionType.equals(TEST_SESSION_LABEL)) {
                             selectedCollectionNameTest = source.getSelectedValue().toString();
+                            amountSlider.setMaximum((int) database.size(selectedCollectionNameTest));
                         }
                     }
                 }
@@ -192,33 +223,11 @@ public class GUI {
             }
             levelSlider.addChangeListener(new LevelSliderListener());
 
+
             startPanel.add(levelSlider);
 
             //Flashcard amount slider
-            JLabel amountSliderLabel = new JLabel("Choose how many words you want to test:");
             startPanel.add(amountSliderLabel);
-
-            JSlider amountSlider = new JSlider(JSlider.HORIZONTAL, 5, 50, 10);
-            amountSlider.setMajorTickSpacing(5);
-            amountSlider.setMinorTickSpacing(1);
-            amountSlider.setPaintTicks(true);
-            amountSlider.setPaintLabels(true);
-            amountSlider.setToolTipText("Flashcard amount");
-
-            class FlashcardAmountSliderListener implements ChangeListener {
-                public void stateChanged(ChangeEvent e) {
-                    JSlider source = (JSlider) e.getSource();
-
-                    if (!source.getValueIsAdjusting()) {
-                        if (sessionType.equals(LEARNING_SESSION_LABEL)) {
-                            learningFlashcardAmount = (int) source.getValue();
-                        } else if (sessionType.equals(TEST_SESSION_LABEL)) {
-                            testingFlashcardAmount = (int) source.getValue();
-                        }
-                    }
-                }
-            }
-            amountSlider.addChangeListener(new FlashcardAmountSliderListener());
 
             startPanel.add(amountSlider);
 
@@ -243,7 +252,8 @@ public class GUI {
             if (sessionType.equals(LEARNING_SESSION_LABEL)) {
                 learningFlashcard = getNewFlashcard(learningSessionLevel, true, sessionType);
             } else if (sessionType.equals(TEST_SESSION_LABEL)) {
-                testingFlashcard = getNewFlashcard(testSessionLevel, true, sessionType);;
+                testingFlashcard = getNewFlashcard(testSessionLevel, true, sessionType);
+                ;
             }
 
             sessionPanel.setLayout(new GridBagLayout());
@@ -283,7 +293,6 @@ public class GUI {
                     if ("apply".equals(e.getActionCommand())) {
 //                        points += flashcard.getPoints();
 //                        System.out.println(points);
-
                         sessionPanel.removeAll();
                         if (sessionType.equals(LEARNING_SESSION_LABEL)) {
                             if (learningSessionLevel == 4)
@@ -301,6 +310,7 @@ public class GUI {
                         sessionPanel.add(applyButton, buttonConstraint);
                         sessionPanel.revalidate();
                         sessionPanel.repaint();
+
                     }
                 }
             }
@@ -377,8 +387,7 @@ public class GUI {
             return mainLearningSessionPanel;
         }
 
-        protected int makeSummaryPanel(String sessionType)
-        {
+        protected int makeSummaryPanel(String sessionType) {
             Object[] options = {"Yes", "No"};
 
             if (sessionType.equals(LEARNING_SESSION_LABEL)) {
@@ -400,8 +409,7 @@ public class GUI {
 
         protected Flashcard getNewFlashcard(int lvl, boolean isAnswerCorrect, String sessionType) {
             if (sessionType.equals(LEARNING_SESSION_LABEL)) {
-                if (learningFlashcardCollection.getIterator().hasNext(isAnswerCorrect))
-                {
+                if (learningFlashcardCollection.getIterator().hasNext(isAnswerCorrect)) {
                     switch (lvl) {
                         case 1:
                             return new Level1Flashcard(learningFlashcardCollection.getIterator().getNext(isAnswerCorrect));
@@ -414,12 +422,9 @@ public class GUI {
                         default:
                             break;
                     }
-                }
-                else
-                {
+                } else {
                     int x = makeSummaryPanel(sessionType);
-                    if ( x == JOptionPane.YES_OPTION )
-                    {
+                    if (x == JOptionPane.YES_OPTION) {
                         mainLearningSessionPanel.removeAll();
                         mainLearningSessionPanel.revalidate();
                         mainLearningSessionPanel.repaint();
@@ -427,8 +432,7 @@ public class GUI {
                     }
                 }
             } else if (sessionType.equals(TEST_SESSION_LABEL)) {
-                if (testingFlashcardCollection.getIterator().hasNext(isAnswerCorrect))
-                {
+                if (testingFlashcardCollection.getIterator().hasNext(isAnswerCorrect)) {
                     switch (lvl) {
                         case 1:
                             return new Level1Flashcard(testingFlashcardCollection.getIterator().getNext(isAnswerCorrect));
@@ -441,19 +445,14 @@ public class GUI {
                         default:
                             break;
                     }
-                }
-                else
-                {
+                } else {
                     int x = makeSummaryPanel(sessionType);
-                    if ( x == JOptionPane.YES_OPTION )
-                    {
+                    if (x == JOptionPane.YES_OPTION) {
                         mainTestSessionPanel.removeAll();
                         mainTestSessionPanel.revalidate();
                         mainTestSessionPanel.repaint();
                         mainTestSessionPanel.add(makeTestSessionPanel(sessionType));
-                    }
-                    else
-                    {
+                    } else {
                         Container frame = this.getParent();
                         do
                             frame = frame.getParent();
@@ -480,6 +479,7 @@ public class GUI {
             listAdapter.addAll(collNames);
             collNamesList = new JList<>(listAdapter);
             collNamesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            collNamesList.setSelectedIndex(0);
             JScrollPane scrollPane = new JScrollPane(collNamesList);
             scrollPane.setBorder(BorderFactory.createTitledBorder("Languages"));
             languagesPanel.add(scrollPane);
@@ -494,10 +494,10 @@ public class GUI {
                 try {
                     database.addCollection(value);
                     listAdapter.addElement(value);
+                    this.collectionNames = database.getCollectionsNames().toArray(new String[0]);
 
                 } catch (Exception ex) {
-                    //FIXME add exception handling!
-                    /* ... */
+                    ex.printStackTrace();
                 }
             });
 
@@ -509,17 +509,21 @@ public class GUI {
                 );
 
                 if (confirm == JOptionPane.YES_NO_OPTION) {
-                    database.removeCollection(collNamesList.getSelectedValue());
-                    listAdapter.removeElementAt(collNamesList.getSelectedIndex());
+                    try {
+                        database.removeCollection(collNamesList.getSelectedValue());
+                        listAdapter.removeElementAt(collNamesList.getSelectedIndex());
+                    } catch (IllegalArgumentException exc) {
+                        JOptionPane.showMessageDialog(panel, "Select language from the list", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             });
             languagesPanel.setLayout(new BoxLayout(languagesPanel, BoxLayout.PAGE_AXIS));
             languagesPanel.add(addCollection);
             languagesPanel.add(deleteCollection);
             databaseViewer.setLeftComponent(languagesPanel);
-
+            flashcardCollection = new FlashcardCollection(database, collNamesList.getSelectedValue(), 0);
             JPanel flashcardsTablePanel = new JPanel();
-            TableModelAdapter tableModelAdapter = new TableModelAdapter(flashcardCollection.getFlashcards(), database, "pol-eng");
+            TableModelAdapter tableModelAdapter = new TableModelAdapter(flashcardCollection.getFlashcards(), database, collNamesList.getSelectedValue());
             JTable flashcardTable = new JTable(tableModelAdapter);
             scrollPane = new JScrollPane(flashcardTable);
             scrollPane.setBorder(BorderFactory.createTitledBorder("Flashcards"));
@@ -534,15 +538,25 @@ public class GUI {
                         "foreignLanguage:yourLanguage");
                 String[] arr = userInput.split(":");
                 System.out.println(arr[0] + " " + arr[1]);
-                database.addFlashcard(arr[0], arr[1], collNamesList.getSelectedValue());
-                tableModelAdapter.setValueAt(arr[0], flashcardTable.getRowCount(), 0);
-                tableModelAdapter.setValueAt(arr[1], flashcardTable.getRowCount(), 1);
+                try {
+                    database.addFlashcard(arr[0], arr[1], collNamesList.getSelectedValue());
+                    tableModelAdapter.add(arr[0], arr[1]);
+                } catch (IllegalArgumentException except) {
+                    JOptionPane.showMessageDialog(panel, "Select language from the list", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
             });
 
 
             JButton removeFlashcardBtn = new JButton("Remove pair");
 
             removeFlashcardBtn.addActionListener(e -> {
+                try {
+                    database.removeFlashcard(flashcardTable.getValueAt(flashcardTable.getSelectedRow(), 0).toString(), collNamesList.getSelectedValue());
+                    tableModelAdapter.delete(flashcardTable.getSelectedRow());
+                } catch (IllegalArgumentException except) {
+                    JOptionPane.showMessageDialog(panel, "Select language from the list", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             });
 
             flashcardsTablePanel.add(addFlashcardBtn);

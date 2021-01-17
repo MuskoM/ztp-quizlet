@@ -73,7 +73,6 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
         flashcardPanel.setBackground(type.getColor());
         JLabel flashcardTranslatedLabel = new JLabel(this.translatedWord);
         JLabel levelLabel = new JLabel("Level 1");
-        JLabel flashcardLanguageLabel = new JLabel(this.languageWord);
         JLabel userAnswer = new JLabel("");
         flashcardPanel.setLayout(new BoxLayout(flashcardPanel,BoxLayout.PAGE_AXIS));
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.LINE_AXIS));
@@ -98,7 +97,6 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
         });
 
         flashcardPanel.add(levelLabel);
-        flashcardPanel.add(flashcardLanguageLabel);
         flashcardPanel.add(flashcardTranslatedLabel);
         buttonsPanel.add(answerA);
         buttonsPanel.add(answerB);
@@ -111,7 +109,7 @@ public class Level1Flashcard extends FlashcardBaseDecorator{
     }
 
     @Override
-    public void setAnswer(String answer) {
+    protected void setAnswer(String answer) {
         String converted_answer = " ";
         switch (answer){
             case "A":

@@ -74,19 +74,9 @@ public class Flashcard {
         return translatedWord;
     }
 
-
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer)
+    protected void setAnswer(String answer)
     {
         this.answer = answer;
-    }
-
-    public boolean isAnswered() {
-        return isAnswered;
     }
 
     public void setAnswered(boolean answered) {
@@ -97,14 +87,6 @@ public class Flashcard {
         return isAnswerCorrect;
     }
 
-    public FlashcardType getType() {
-        return type;
-    }
-
-
-    public void setOptions(List<String> options) {
-        this.options = options;
-    }
 
     @Override
     public String toString() {

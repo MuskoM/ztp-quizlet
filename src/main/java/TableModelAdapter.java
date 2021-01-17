@@ -15,6 +15,16 @@ public class TableModelAdapter extends AbstractTableModel {
         this.collection = _collection;
     }
 
+    public void add(String languageWord, String translatedWord){
+        flashcards.add(new Flashcard(languageWord,translatedWord));
+        fireTableStructureChanged();
+    }
+
+    public void delete(int row){
+        flashcards.remove(row);
+        fireTableStructureChanged();
+    }
+
     @Override
     public int getRowCount() {
         return flashcards.size();

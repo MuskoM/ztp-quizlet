@@ -44,7 +44,12 @@ public class Database {
         return instance;
     }
 
-    public MongoCollection getCollection(String collectionName){
+    public long size(String collectionName){
+        return this.database.getCollection(collectionName).countDocuments();
+    }
+
+    public MongoCollection getCollection(String collectionName) throws IllegalArgumentException
+    {
         return this.database.getCollection(collectionName);
     }
 
@@ -55,7 +60,8 @@ public class Database {
         return arrayList;
     }
 
-    public void editFlashcard(String searchField, String searchString, String data, String collection){
+    public void editFlashcard(String searchField, String searchString, String data, String collection)throws IllegalArgumentException
+    {
 
         MongoCollection<Document> col = database.getCollection(collection);
 
@@ -66,7 +72,8 @@ public class Database {
 
     }
 
-    public void addCollection(String collectionName){
+    public void addCollection(String collectionName)throws IllegalArgumentException
+    {
         database.createCollection(collectionName);
     }
 
@@ -75,22 +82,22 @@ public class Database {
         mg.drop();
     }
 
-    public void addFlashcard(String languageWord, String translatedWord, String collection){
+    public void addFlashcard(String languageWord, String translatedWord, String collection) throws IllegalArgumentException{
         MongoCollection mg = this.database.getCollection(collection);
         Document testDoc = new Document("languageWord",languageWord).append("translatedWord",translatedWord);
         mg.insertOne(testDoc);
     }
 
-    public void removeFlashcard(String languageWord, String collection){
+    public void removeFlashcard(String languageWord, String collection) throws IllegalArgumentException{
         MongoCollection mg = this.database.getCollection(collection);
         Bson filter = eq("languageWord", languageWord);
         mg.deleteOne(filter);
     }
 
-    public List getOptionWords(String field_name){
+    public List getOptionWords(String field_name, String collectionName){
 
         List <String> documents = new ArrayList<>();
-        MongoCollection<Document> collection = database.getCollection("pol-eng");
+        MongoCollection<Document> collection = database.getCollection(collectionName);
         FindIterable<Document> iterable;
         iterable = collection.find(new Document());
         iterable.forEach(document -> {
